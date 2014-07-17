@@ -1,0 +1,39 @@
+*
+{
+	padding: 0px;
+	margin: 0px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+}
+
+#canvas 
+{
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+canvas
+{
+	display: block;
+	position: absolute;
+	width: 128px;
+	height: 128px;
+  
+	-webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+	-moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+	
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	
+	cursor: pointer;	
+}
+
+p
+{
+	font-size: 20px;
+	padding: 20px;
+}
