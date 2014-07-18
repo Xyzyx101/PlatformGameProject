@@ -1,34 +1,163 @@
 $(document).ready(
 	function() {
 		"use strict";
-		var canvas = $("#canvas");
 		
-		var game = {
-			TITLESCREEN = 0,
-			OVERWORLD = 1,
-			LEVEL = 2,
-			MINIGAME = 3,
-			gameState = STARTSCREEN,
-			loadLevel = function (gameState) {
+		var gameElement = $("#game");
+		var canvas = document.createElement("canvas");
+		canvas.setAttribute("width", "1024px");
+		canvas.setAttribute("height", "960px");
+		gameElement.append(canvas);
+		//canvas.addEventListener("mousedown", mousedownHandler, false);
+		var ctx = canvas.getContext("2d");
+			
+		function Game () {
+			this.TITLESCREEN = 0;
+			this.OVERWORLD = 0;
+			this.LEVEL01 = 2;
+			this.MINIGAME = 3;
+			var gameState = null;
+			var backgroundLayer = null;
+			var resources = [];
+			var currentLevel = null;
+			var levelSize = {width:0, height:0};
+			var screenWidth = {width:1024, height:960}
+			var frameRequestId;
+			
+			this.loadLevel = function (gameState) {
+				killTick();
+				this.resources = [];
 				switch(gameState) {
-				case TITLESCREEN:
+				case this.TITLESCREEN:
+					gameState = this.TITLESCREEN;
+					currentLevel = new TitleScreen();
 					break;
-				case OVERWORLD:
+				case this.OVERWORLD:
 					break;
-				case LEVEL:
+				case this.LEVEL:
 					break;
-				case MINIGAME:
+				case this.MINIGAME:
 					break;
 				}
-			}
-			tick = function () {
-				console.log("tick");
-			}
+				
+				function notLoaded (element) {
+					return element.isLoaded === false;
+				}
+				do {
+					//loop until all the resources are loaded
+					if (resources.length === 0) {
+						console.log("No Resources Loaded!!!");
+						break;
+					}
+				} while (this.resources.some(notLoaded));
+				frameRequestId = window.requestAnimationFrame(tick);
+			};
+			this.addResource = function (newResource) {
+				resources.push(newResource);
+			};
+			this.setBackgroundLayer = function (layer) {
+				backgroundLayer = layer;
+				levelSize.width = layer.width;
+				levelSize.height = layer.height;
+			};
 			
+			var lastTick = 0;
+			var tick = function (tickTime) {
+				var dt = tickTime - lastTick;
+				console.log(dt);
+				update(dt);
+				render();
+				lastTick = tickTime;
+				frameRequestId = window.requestAnimationFrame(tick);
+			};
+			
+			var update = function (dt) {
+			
+			};
+			
+			var render = function () {
+				backgroundLayer.render();
+			};
+			
+			var killTick = function () {
+				if (frameRequestId) {
+					window.cancelAnimationFrame(frameRequestId);
+				}
+			}
 		}
 		
+		function BackgroundLayer (src) {
+			this.isLoaded = false;
+			var image = new Image();
+			image.addEventListener("load", this.loadHandler, false);
+			image.src = src;
+			game.addResource(this);
+			this.render = function () {
+				ctx.drawImage(image, 0, 0);
+			}
+		}
+		BackgroundLayer.prototype.loadHandler = function () {
+			this.isLoaded = true;
+		};
 		
+		function Entity (src) {
+			this.isLoaded = false;
+			game.addResource(this);
+			
+			var currentFrame = 0;
+			var frameDelay = 0; //frame delay of 0 will not animate
+			var animations = []; // should contain anim objects
+			var frameSize = {width:0,height:0};
+			this.addAnim = function (anim) {
+				animations.push(anim);
+			};
+			this.update = function () {
+				console.log("Update should be overwritten in the child class");
+			};
+			this.render = function () {
+				console.log("Render should be overwritten in the child class");
+			};
+		}
 		
+		/* A single animation.  Which animation is playing will change based on an entities state machine. 
+			@image - a loaded image objects
+			@frameSize - {width:0,height:0} - height and width of each animation frame
+			@frames - [{x:0,y:0},{x:0,y:0},{x:0,y:0}] - array of position vectors from the source image
+			@playOrder - [0,1,2,3,2,1,0] - animation frame sequence */
+		function Anim (image, frameSize, frames, playOrder) {
+		
+		}
+		
+		function StartMenu (src) {
+			Entity.call(this, src);
+			
+		}
+		StartMenu.prototype = new Entity();
+		
+		function TitleScreen () {
+			game.setBackgroundLayer(new BackgroundLayer("./images/titleScreenBackground.png"));
+		}
+		
+		/*
+		function Product(name, value){
+		  this.name = name;
+		  if(value >= 1000)
+			this.value = 999;
+		  else
+			this.value = value;
+		}
+
+		function Prod_dept(name, value, dept){
+		  this.dept = dept;
+		  Product.call(this, name, value);
+		}
+
+		Prod_dept.prototype = new Product();
+		*/
+		
+		var game = new Game();
+		game.loadLevel(game.TITLESCREEN);
+		
+		/*
 		function Monster (row, column) {
 			// State Consts
 			var HIDING = 0;
@@ -140,4 +269,5 @@ $(document).ready(
 			});
 			setTimeout(mainLoop, 120);
 		}
+		*/
 	});
