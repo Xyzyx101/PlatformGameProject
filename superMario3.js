@@ -163,6 +163,7 @@ $(document).ready(
                         found = true;
                         break;
                     }
+                    index++;
                 } while (index < animations.length);
                 if (found === true) {
                     currentAnim = animations[index];
@@ -201,19 +202,118 @@ $(document).ready(
             this.addAnim(new Anim("Start",[{x:0,y:0}],[0]));
             this.addAnim(new Anim("Match",[{x:400,y:0}],[0]));
             this.changeAnim("Start");
+            var START = 0;
+            var MATCH = 1;
+            var currentState = START;
             this.update = function () {
+                switch(currentState) {
+                case START:
+                    if (input.getPressed(Input.DOWN) || input.getPressed(Input.SELECT)) {
+                        this.changeAnim("Match");
+                        currentState = MATCH;
+                    }
+                    if (input.getPressed(Input.JUMP) || input.getPressed(Input.START)) {
+                        console.log("start game!");
+                    }
+                    break;
+                case MATCH:
+                    if (input.getPressed(Input.UP) || input.getPressed(Input.SELECT)) {
+                        this.changeAnim("Start");
+                        currentState = START;
+                    }
+                    if (input.getPressed(Input.JUMP) || input.getPressed(Input.START)) {
+                        console.log("match game!");
+                    }
+                    break;
+                }
             };
             this.render = function () {
                 this.displayAnim(300, 600);
             };
         }
-        //StartMenu.prototype = Object.create(Entity.prototype);
 
         function TitleScreen () {
             game.setBackgroundLayer(new BackgroundLayer("./images/titleScreenBackground.png"));
             var startMenu = game.createEntity(new StartMenu());
 
         }
+
+        function Input() {
+            var keyPress = {};
+            var keyHeld = {};
+            var bindings = {};
+
+            this.getPressed = function (action) {
+                if (keyPress[action]) {
+                    keyPress[action] = false;
+                    return true;
+                }
+                return false;
+            };
+            this.getHeld = function (action) {
+                if (keyHeld[action]) {
+                    return true;
+                }
+                return false;
+            };
+            this.bindKey = function (key, action) {
+                bindings[key] = action;
+            };
+            var keyDown = function (event) {
+                var action = bindings[event.keyCode];
+                // if (action) verifies the action exists and === 0 is just an edgecase where it is 0
+                if (action || action === 0) {
+                    keyPress[action] = true;
+                    keyHeld[action] = true;
+                }
+                event.stopPropagation();
+                event.preventDefault();
+            };
+            var keyUp = function (event) {
+                var action = bindings[event.keyCode];
+                if (action || action === 0) {
+                    keyPress[action] = false;
+                    keyHeld[action] = false;
+                }
+                event.stopPropagation();
+                event.preventDefault();
+            };
+            window.addEventListener('keydown', keyDown.bind(this), false);
+            window.addEventListener('keyup', keyUp.bind(this), false);
+        }
+        Input.KEY = {'LEFT_ARROW':37,
+                               'UP_ARROW':38,
+                               'RIGHT_ARROW':39,
+                               'DOWN_ARROW':40,
+                               'CTRL':17,
+                               'ALT':18,
+                               'W':87,
+                               'A':65,
+                               'S':83,
+                               'D':68,
+                               'COMMA':188,
+                               'PERIOD':190,
+                               'OPEN_BRACKET':219,
+                               'CLOSE_BRACKET':221
+                              };
+        Input.UP = 0;
+        Input.LEFT = 1;
+        Input.DOWN = 2;
+        Input.RIGHT = 3;
+        Input.JUMP = 4;
+        Input.ACTION = 5;
+        Input.SELECT = 6;
+        Input.START = 7;
+
+        var input = new Input();
+        input.bindKey(Input.KEY.W, Input.UP);
+        input.bindKey(Input.KEY.A, Input.LEFT);
+        input.bindKey(Input.KEY.S, Input.DOWN);
+        input.bindKey(Input.KEY.D, Input.RIGHT);
+        input.bindKey(Input.KEY.COMMA, Input.ACTION);
+        input.bindKey(Input.KEY.PERIOD, Input.JUMP);
+        input.bindKey(Input.KEY.OPEN_BRACKET, Input.SELECT);
+        input.bindKey(Input.KEY.CLOSE_BRACKET, Input.START);
 
         var game = new Game();
         game.loadLevel(game.TITLESCREEN);
