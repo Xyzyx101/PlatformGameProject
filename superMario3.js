@@ -131,7 +131,9 @@ $(document).ready(
             var currentFrame = 0;
             var frameDelay = 0; // frame delay in milliseconds. 0 will not animate
             var animations = []; // should contain anim objects
-            var frameSize = {width:0,height:0};
+            var frameSize = newFrameSize;
+            var animFrameChangeCount = 0;
+            var currentAnim = {};
             this.addAnim = function (anim) {
                 animations.push(anim);
             };
@@ -141,6 +143,47 @@ $(document).ready(
             this.render = function () {
                 console.log("Render should be overwritten in the child class");
             };
+            this.animate = function (dt) {
+                animFrameChangeCount += dt;
+                if (animFrameChangeCount > frameDelay) {
+                    animFrameChangeCount -= frameDelay;
+                    currentFrame++;
+                    if (currentFrame >= currentAnim.playOrder.length) {
+                        currentFrame = 0;
+                    }
+                }
+            };
+            this.changeAnim = function (newAnim) {
+                currentFrame = 0;
+                animFrameChangeCount = 0;
+                var index = 0;
+                var found = false;
+                do {
+                    if (animations[index].name == newAnim) {
+                        found = true;
+                        break;
+                    }
+                } while (index < animations.length);
+                if (found === true) {
+                    currentAnim = animations[index];
+                } else {
+                    console.log("Error " + newAnim + " not found!");
+                }
+            };
+            this.displayAnim = function (dx, dy) {
+                var myFrame = currentAnim.playOrder[currentFrame];
+                var sx = currentAnim.frames[myFrame].x;
+                var sy = currentAnim.frames[myFrame].y;
+                ctx.drawImage(image,
+                              sx,
+                              sy,
+                              frameSize.width,
+                              frameSize.height,
+                              dx,
+                              dy,
+                              frameSize.width,
+                              frameSize.height);
+            };
         }
 
         /* A single animation.  Which animation is playing will change based on an entities state machine.
@@ -148,14 +191,21 @@ $(document).ready(
          @frames - [{x:0,y:0},{x:0,y:0},{x:0,y:0}] - array of position vectors from the source image
          @playOrder - [0,1,2,3,2,1,0] - animation frame sequence */
         function Anim (name, frames, playOrder) {
-
+            this.name = name;
+            this.frames = frames;
+            this.playOrder = playOrder;
         }
 
         function StartMenu () {
             Entity.call(this, "./images/mainMenu.png", 150, {width:400,height:120});
-            this.addAnim(new Anim("Start",{x:0,y:0},[0]));
-            this.addAnim(new Anim("Match",{x:400,y:0},[0]));
-            console.log(currentFrame);
+            this.addAnim(new Anim("Start",[{x:0,y:0}],[0]));
+            this.addAnim(new Anim("Match",[{x:400,y:0}],[0]));
+            this.changeAnim("Start");
+            this.update = function () {
+            };
+            this.render = function () {
+                this.displayAnim(300, 600);
+            };
         }
         //StartMenu.prototype = Object.create(Entity.prototype);
 
@@ -164,6 +214,7 @@ $(document).ready(
             var startMenu = game.createEntity(new StartMenu());
 
         }
+
         var game = new Game();
         game.loadLevel(game.TITLESCREEN);
 
