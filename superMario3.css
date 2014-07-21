@@ -1,3 +1,8 @@
+@font-face {
+	font-family: 'SuperMario3';
+	src: url('./fonts/Super-Mario-Bros--3.ttf');
+}
+
 *
 {
 	padding: 0px;
@@ -23,8 +28,25 @@ canvas
 	cursor: pointer;	
 }
 
-p
+aside
 {
-	font-size: 20px;
+	margin-left: 1024px;
+	font-size: 12px;
 	padding: 20px;
+	font-family: 'SuperMario3', 'Arial', sanserif; }
+}
+
+.controller
+{
+	font-size: 60px;
+}
+
+.keySmall
+{
+	font-size: 16px;
+}
+
+.keyBig
+{
+	font-size: 40px;
 }

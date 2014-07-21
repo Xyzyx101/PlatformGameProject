@@ -5,7 +5,7 @@ $(document).ready(
         var gameElement = $("#game");
         var canvas = document.createElement("canvas");
         canvas.setAttribute("width", "1024px");
-        canvas.setAttribute("height", "960px");
+        canvas.setAttribute("height", "768px");
         gameElement.append(canvas);
         //canvas.addEventListener("mousedown", mousedownHandler, false);
         var ctx = canvas.getContext("2d");
@@ -20,7 +20,7 @@ $(document).ready(
             var resources = [];
             var currentLevel = null;
             var levelSize = {width:0, height:0};
-            var screenWidth = {width:1024, height:960};
+            var screenWidth = {width:1024, height:768};
             var frameRequestId;
             var entities = [];
 
@@ -228,7 +228,7 @@ $(document).ready(
                 }
             };
             this.render = function () {
-                this.displayAnim(300, 620);
+                this.displayAnim(300, 500);
             };
         }
 
@@ -246,7 +246,7 @@ $(document).ready(
                 this.animate(dt);
             };
             this.render = function () {
-                this.displayAnim(450, 440);
+                this.displayAnim(450, 350);
             };
         }
 
