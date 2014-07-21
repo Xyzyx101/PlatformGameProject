@@ -82,7 +82,7 @@ $(document).ready(
 
             var update = function (dt) {
                 entities.forEach( function(element) {
-                    element.update();
+                    element.update(dt);
                 });
             };
 
@@ -129,7 +129,7 @@ $(document).ready(
             game.addResource(this);
 
             var currentFrame = 0;
-            var frameDelay = 0; // frame delay in milliseconds. 0 will not animate
+            var frameDelay = newFrameDelay; // frame delay in milliseconds. 0 will not animate
             var animations = []; // should contain anim objects
             var frameSize = newFrameSize;
             var animFrameChangeCount = 0;
@@ -145,7 +145,7 @@ $(document).ready(
             };
             this.animate = function (dt) {
                 animFrameChangeCount += dt;
-                if (animFrameChangeCount > frameDelay) {
+                while (animFrameChangeCount > frameDelay) {
                     animFrameChangeCount -= frameDelay;
                     currentFrame++;
                     if (currentFrame >= currentAnim.playOrder.length) {
@@ -198,7 +198,7 @@ $(document).ready(
         }
 
         function StartMenu () {
-            Entity.call(this, "./images/mainMenu.png", 150, {width:400,height:120});
+            Entity.call(this, "./images/mainMenu.png", 0, {width:400,height:120});
             this.addAnim(new Anim("Start",[{x:0,y:0}],[0]));
             this.addAnim(new Anim("Match",[{x:400,y:0}],[0]));
             this.changeAnim("Start");
@@ -228,14 +228,32 @@ $(document).ready(
                 }
             };
             this.render = function () {
-                this.displayAnim(300, 600);
+                this.displayAnim(300, 620);
+            };
+        }
+
+        function FlashingTitle () {
+            Entity.call(this, "./images/flashingTitle3.png", 120, {width:170,height:177});
+            this.addAnim(new Anim("Flash",
+                                  [{x:0,y:0},
+                                   {x:170,y:0},
+                                   {x:340,y:0},
+                                   {x:510,y:0}],
+                                  [0,1,2,3,2,1])
+                        );
+            this.changeAnim("Flash");
+            this.update = function (dt) {
+                this.animate(dt);
+            };
+            this.render = function () {
+                this.displayAnim(450, 440);
             };
         }
 
         function TitleScreen () {
             game.setBackgroundLayer(new BackgroundLayer("./images/titleScreenBackground.png"));
-            var startMenu = game.createEntity(new StartMenu());
-
+            game.createEntity(new StartMenu());
+            game.createEntity(new FlashingTitle());
         }
 
         function Input() {
