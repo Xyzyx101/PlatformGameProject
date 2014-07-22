@@ -21,24 +21,6 @@ $(document).ready(
         //canvas.addEventListener("mousedown", mousedownHandler, false);
         sm3.ctx = canvas.getContext("2d");
 
-        function BackgroundLayer (src) {
-            this.isLoaded = false;
-            var loadHandler = function () {
-                 this.isLoaded = true;
-            };
-            var image = new Image();
-            // loadHandler.bind(this) should make loadHandler run in the context
-            // of this function rather than the context of image.
-            image.addEventListener("load", loadHandler.bind(this), false);
-            image.src = src;
-            sm3.game.addResource(this);
-            this.render = function () {
-                sm3.ctx.drawImage(image, 0, 0);
-            };
-        }
-
-        
-
         //var input = new sm3.Input();
         sm3.input.bindKey(sm3.input.KEY.W, sm3.UP);
         sm3.input.bindKey(sm3.input.KEY.A, sm3.LEFT);
@@ -50,5 +32,4 @@ $(document).ready(
         sm3.input.bindKey(sm3.input.KEY.CLOSE_BRACKET, sm3.START);
 
         sm3.game.loadLevel(sm3.game.TITLESCREEN);
-
     });

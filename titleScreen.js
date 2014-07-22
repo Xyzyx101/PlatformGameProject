@@ -1,7 +1,7 @@
 (function () {
     "use strict";
     sm3.TitleScreen = function () {
-        sm3.game.setBackgroundLayer(new BackgroundLayer("./images/titleScreenBackground.png"));
+        sm3.game.setBackgroundLayer(new sm3.BackgroundLayer("./images/titleScreenBackground.png"));
         sm3.game.createEntity(new StartMenu());
         sm3.game.createEntity(new FlashingTitle());
     };
@@ -22,7 +22,7 @@
                     currentState = MATCH;
                 }
                 if (sm3.input.getPressed(sm3.JUMP) || sm3.input.getPressed(sm3.START)) {
-                    console.log("start game!");
+                    sm3.game.loadLevel(sm3.game.WORLD01MAP);
                 }
                 break;
             case MATCH:

@@ -3,7 +3,7 @@
     sm3.game = (function () {
         function Game () {
             this.TITLESCREEN = 0;
-            this.OVERWORLD = 0;
+            this.WORLD01MAP = 1;
             this.LEVEL01 = 2;
             this.MINIGAME = 3;
             var gameState = null;
@@ -25,7 +25,9 @@
                     gameState = this.TITLESCREEN;
                     currentLevel = new sm3.TitleScreen();
                     break;
-                case this.OVERWORLD:
+                case this.WORLD01MAP:
+                    gameState = this.WORLD01MAP;
+                    currentLevel = new sm3.World01Map();
                     break;
                 case this.LEVEL:
                     break;
