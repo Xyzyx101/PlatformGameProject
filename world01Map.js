@@ -2,7 +2,6 @@
     "use strict";
     sm3.World01Map = function () {
         sm3.game.setBackgroundLayer(new sm3.BackgroundLayer("./images/world_01_map_base.png"));
-
         var EMPTY = 0;
         var PATH = 1;
         var TREE = 3;
@@ -16,6 +15,8 @@
         // in tiles
         var MAPWIDTH = 14;
         var MAPHEIGHT = 9;
+        
+        var EDGEOFFSET = {x:22, y:20};
         
         for (var i = 0; i < mapData.length; i++) {
             var tileX = i % MAPWIDTH;
@@ -31,23 +32,48 @@
                 //spawn tree entity
                 break;
             case 11:
-                //spawn level01 entity
+                 sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL01, 
+                                        {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
+                                        {left:false,right:false,top:false,bottom:true}));
                 break;
             case 12:
-            
+                sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL02, 
+                                        {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
+                                        {left:true,right:false,top:false,bottom:false}));
                 break;
             case 13:
-            
+                sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL03, 
+                                        {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
+                                        {left:true,right:false,top:false,bottom:false}));
                 break;
             case 14:
-            
+                sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL04, 
+                                        {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
+                                        {left:true,right:false,top:false,bottom:false}));
                 break;
+            case 15:
+                sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL05, 
+                                        {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
+                                        {left:false,right:false,top:true,bottom:false}));
+                break;
+            case 16:
+                sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL06, 
+                                        {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
+                                        {left:true,right:false,top:false,bottom:false}));
             default:
                 console.log("Unknown tile " + mapData[i] + "found at position " + i);
             }
-            
+           
             //DELETE ME
             console.log(tileX + "x, " + tileY + "y");
         }
     };
+    sm3.World01Map.LEVELS = 
+                {LEVEL01:0,
+                LEVEL02:1,
+                LEVEL03:2,
+                LEVEL04:3,
+                LEVEL05:4,
+                LEVEL06:5
+                };
 })();

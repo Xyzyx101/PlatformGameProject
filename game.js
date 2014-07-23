@@ -10,11 +10,12 @@
             var backgroundLayer = null;
             var resources = [];
             var currentLevel = null;
+            var currentWorld = null;
             var levelSize = {width:0, height:0};
             var screenWidth = {width:1024, height:768};
             var frameRequestId;
             var entities = [];
-
+            
             this.loadLevel = function (gameState) {
                 killTick();
                 backgroundLayer = null;
@@ -28,6 +29,7 @@
                 case this.WORLD01MAP:
                     gameState = this.WORLD01MAP;
                     currentLevel = new sm3.World01Map();
+                    changeWorld(currentLevel);
                     break;
                 case this.LEVEL:
                     break;
@@ -63,7 +65,10 @@
                 entities.push(entity);
                 return entity;
             };
-
+            this.getWorld = function () {
+                return currentWorld;
+            };
+            
             var lastTick = 0;
             var tick = function (tickTime) {
                 var dt = tickTime - lastTick;
@@ -91,6 +96,14 @@
                     window.cancelAnimationFrame(frameRequestId);
                 }
             };
+            
+            var changeWorld = function (newWorld) {
+                if (newWorld != currentWorld){
+                    //reset world values here
+                    currentWorld = newWorld;
+                }
+            }
+            
         }
         return new Game();
     })();
