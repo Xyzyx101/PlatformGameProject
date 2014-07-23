@@ -29,7 +29,7 @@
             
                 break;
             case TREE:
-                //spawn tree entity
+                sm3.game.createEntity(new sm3.DancingTree({x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}));
                 break;
             case 11:
                  sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL01, 
@@ -61,12 +61,17 @@
                                         {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
                                         {left:true,right:false,top:false,bottom:false}));
             default:
-                console.log("Unknown tile " + mapData[i] + "found at position " + i);
+                console.log("Unknown tile " + mapData[i] + " found at position " + i);
             }
-           
-            //DELETE ME
-            console.log(tileX + "x, " + tileY + "y");
         }
+        var playerPosition = {x:1, y:2};
+        sm3.game.createEntity(new sm3.MarioMap(
+                                {x:playerPosition.x * TILEWIDTH + EDGEOFFSET.x, y:playerPosition.y * TILEHEIGHT + EDGEOFFSET.y},
+                                sm3.MarioMap.STATE.SMALL
+                                ));
+        this.changePlayerPosition = function () {
+        
+        };
     };
     sm3.World01Map.LEVELS = 
                 {LEVEL01:0,
