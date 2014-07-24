@@ -68,5 +68,8 @@
         this.render = function () {
             this.displayAnim(position.x, position.y);
         };
+        this.getOpenSides = function () {
+            return openSides;
+        };
     };
 })();

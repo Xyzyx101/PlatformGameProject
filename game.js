@@ -102,8 +102,7 @@
                     //reset world values here
                     currentWorld = newWorld;
                 }
-            }
-            
+            };
         }
         return new Game();
     })();

@@ -17,7 +17,7 @@
         var MAPHEIGHT = 9;
         
         var EDGEOFFSET = {x:22, y:20};
-        
+        var levelTiles = {};
         for (var i = 0; i < mapData.length; i++) {
             var tileX = i % MAPWIDTH;
             var tileY = Math.floor(i / MAPWIDTH);
@@ -32,46 +32,94 @@
                 sm3.game.createEntity(new sm3.DancingTree({x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}));
                 break;
             case 11:
-                 sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL01, 
+                 levelTiles[mapData[i]] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL01, 
                                         {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
                                         {left:false,right:false,top:false,bottom:true}));
                 break;
             case 12:
-                sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL02, 
+                levelTiles[mapData[i]] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL02, 
                                         {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
                                         {left:true,right:false,top:false,bottom:false}));
                 break;
             case 13:
-                sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL03, 
+                levelTiles[mapData[i]] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL03, 
                                         {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
                                         {left:true,right:false,top:false,bottom:false}));
                 break;
             case 14:
-                sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL04, 
+                levelTiles[mapData[i]] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL04, 
                                         {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
                                         {left:true,right:false,top:false,bottom:false}));
                 break;
             case 15:
-                sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL05, 
+                levelTiles[mapData[i]] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL05, 
                                         {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
                                         {left:false,right:false,top:true,bottom:false}));
                 break;
             case 16:
-                sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL06, 
+                levelTiles[mapData[i]] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL06, 
                                         {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
                                         {left:true,right:false,top:false,bottom:false}));
+                break;
             default:
                 console.log("Unknown tile " + mapData[i] + " found at position " + i);
             }
         }
-        var playerPosition = {x:1, y:2};
-        sm3.game.createEntity(new sm3.MarioMap(
-                                {x:playerPosition.x * TILEWIDTH + EDGEOFFSET.x, y:playerPosition.y * TILEHEIGHT + EDGEOFFSET.y},
-                                sm3.MarioMap.STATE.SMALL
-                                ));
-        this.changePlayerPosition = function () {
-        
+        // pass in a position in map tiles and returns a new position in pixels or null if the new position is blocked.
+        this.checkPassable = function (currentPosition, targetPosition) {
+            if (targetPosition.x < 0 ||
+                targetPosition.x > MAPWIDTH ||
+                targetPosition.y < 0 ||
+                targetPosition.y > MAPHEIGHT) {
+            return null;    
+            }
+            var currentTileType = getMapData(currentPosition);
+            var targetTileType = getMapData(targetPosition);    
+            
+            // Current tile type > 10 is a level tile.  if you are standing on a level then
+            //  the direction you can move to depends on the level being completed
+            if (currentTileType > 10) {
+                var openSides = levelTiles[currentTileType].getOpenSides();
+                var passable = currentPosition.x < targetPosition.x && openSides.right ||
+                            currentPosition.x > targetPosition.x && openSides.left ||
+                            currentPosition.y < targetPosition.y && openSides.bottom ||
+                            currentPosition.y > targetPosition.y && openSides.top;
+                if (targetTileType == PATH && passable) {
+                    return getPixelPosition(targetPosition);
+                } else {
+                    return null;
+                }
+            } else {
+                if (targetTileType == PATH) {
+                    return getPixelPosition(targetPosition);
+                }
+                if (targetTileType > 10) {
+                    return getPixelPosition(targetPosition);
+                }
+            }
+            return null;
         };
+        
+        // attempt to start level
+        enterLevel = function (mapPosition) {
+            ????? start level here            
+        };
+        
+         //pass in a map position of form {x:0,y:0} and get back the pixel position of the tile
+        function getPixelPosition(mapPosition) {
+            return {x:mapPosition.x * TILEWIDTH + EDGEOFFSET.x, y:mapPosition.y * TILEHEIGHT + EDGEOFFSET.y};
+        }
+        //pass in mapTile {x:0,y:0} and gets tile type back
+        function getMapData(mapTile) {
+            return mapData[mapTile.y * MAPWIDTH + mapTile.x];
+        }
+        var initialMapPosition = {x:1,y:2};
+        sm3.game.createEntity(new sm3.MarioMap(
+                            getPixelPosition(initialMapPosition),
+                            sm3.MarioMap.CHARACTERSTATE.SMALL,
+                            initialMapPosition
+                            ));
+        
     };
     sm3.World01Map.LEVELS = 
                 {LEVEL01:0,

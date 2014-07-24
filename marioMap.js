@@ -1,8 +1,10 @@
 /*  This is the level representation on the world map.
     @param position - an object in the form {x:pixels, y:pixels}.
 */
-sm3.MarioMap = function (position, state) {
+sm3.MarioMap = function (position, characterState, initialMapPosition) {
     "use strict";
+    var currentCharacterState = characterState;
+    var mapPosition = initialMapPosition;
     var frameSize = {width:70,height:64};
     sm3.Entity.call(this, "./images/mapTiles.png", 350, frameSize);
     this.addAnim(new sm3.Anim("Small",
@@ -21,15 +23,73 @@ sm3.MarioMap = function (position, state) {
                 [0,1])                  
     );
     this.changeAnim("Small");
+    
+    var moveSpeed = 100;
+    
     var MOVING = 0;
     var STOPPED = 1;
+    var currentState = STOPPED;
+    
+    var newPixelPosition;
     this.update = function (dt) {
         switch(currentState) {
         case MOVING:
-        
+            var xDirection = newPixelPosition.x - position.x;
+            var yDirection = newPixelPosition.y - position.y;
+            if (xDirection < 0) {
+                xDirection = -1;
+                position.x += xDirection * moveSpeed * dt;
+                if (position.x < newPixelPosition.x ) { position.x = newPixelPosition.x;}
+            }
+            if (xDirection > 0) {
+                xDirection = 1;
+                position.x += xDirection * moveSpeed * dt;
+                if (position.x > newPixelPosition.x ) {position.x = newPixelPosition.x;}
+            }
+            if (yDirection > 0) {
+                yDirection = 1;
+                position.y += yDirection * moveSpeed * dt;
+                if (position.y > newPixelPosition.y ) {position.y = newPixelPosition.y;}
+            }
+            if (yDirection < 0) {
+                yDirection = -1;
+                position.y += yDirection * moveSpeed * dt;
+                if (position.y < newPixelPosition.y) {position.y = newPixelPosition.y;}
+            }
+            if (position.x == newPixelPosition.x &&
+                position.y == newPixelPosition.y) {
+                newPixelPosition = null;
+                currentState = STOPPED;
+            }
             break;
         case STOPPED:
-        
+            if (sm3.input.getPressed(sm3.JUMP) || sm3.input.getPressed(sm3.START)) {
+                sm3.game.getWorld().enterLevel(mapPosition);
+            }
+            
+            var targetPosition;
+            switch(true) {
+            case sm3.input.getPressed(sm3.UP):
+                targetPosition = {x:mapPosition.x, y:mapPosition.y - 1};
+                newPixelPosition = sm3.game.getWorld().checkPassable(mapPosition, targetPosition);
+                break;
+            case sm3.input.getPressed(sm3.DOWN):
+                targetPosition = {x:mapPosition.x, y:mapPosition.y + 1};
+                newPixelPosition = sm3.game.getWorld().checkPassable(mapPosition, targetPosition);
+                break;
+            case sm3.input.getPressed(sm3.LEFT):
+                targetPosition = {x:mapPosition.x - 1, y:mapPosition.y};
+                newPixelPosition = sm3.game.getWorld().checkPassable(mapPosition, targetPosition);
+                break;
+            case sm3.input.getPressed(sm3.RIGHT):
+                targetPosition = {x:mapPosition.x + 1, y:mapPosition.y};
+                newPixelPosition = sm3.game.getWorld().checkPassable(mapPosition, targetPosition);
+                break;
+            }
+            if (newPixelPosition) {
+                mapPosition = targetPosition;
+                currentState = MOVING;
+            }
             break;
         }
         this.animate(dt);
@@ -41,4 +101,4 @@ sm3.MarioMap = function (position, state) {
         targetPosition = newTargetPosition;
     };
 };
-sm3.MarioMap.STATE = {SMALL:0, SUPER:1, RACOON:2};
+sm3.MarioMap.CHARACTERSTATE = {SMALL:0, SUPER:1, RACOON:2};
