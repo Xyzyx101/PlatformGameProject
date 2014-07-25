@@ -47,6 +47,7 @@
                     if ( resources.some(notLoaded) ) {
                          setTimeout(verifyAllResourcesLoaded, 0);
                     } else {
+                        killTick();
                         frameRequestId = window.requestAnimationFrame(tick);
                     }
                 }
@@ -72,9 +73,9 @@
             var lastTick = 0;
             var tick = function (tickTime) {
                 var dt = tickTime - lastTick;
+                lastTick = tickTime;
                 update(dt);
                 render();
-                lastTick = tickTime;
                 frameRequestId = window.requestAnimationFrame(tick);
             };
 

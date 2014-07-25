@@ -5,7 +5,10 @@
         var EMPTY = 0;
         var PATH = 1;
         var TREE = 3;
-        // 11 = level01, 12 = Level02, 13 = level03, ..., level02 = 16;
+        // 11 = level01, 12 = Level02, 13 = level03, ..., level06 = 16;
+        var TOADSHOUSE = 17;
+        var SPINGAME = 18;
+        
         var mapData = [3, 3, 3, 11, 1, 1, 1, 12, 1, 13, 1, 1, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 1, 1, 1, 1, 3, 3, 3, 1, 1, 14, 1, 1, 3, 3, 3, 3, 3, 0, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 3, 3, 0, 0, 0, 3, 3, 0, 0, 1, 0, 3, 3, 3, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 3, 0, 0, 0, 15, 1, 1, 1, 16, 0, 0, 0, 0, 0, 3];
         
         // in pixels
@@ -61,6 +64,16 @@
                                         {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
                                         {left:true,right:false,top:false,bottom:false}));
                 break;
+            case 17:
+                levelTiles[mapData[i]] = sm3.game.createEntity(new sm3.MapMiniGame(sm3.World01Map.LEVELS.SPINGAME,
+                                        {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
+                                        {left:false,right:false,top:true,bottom:false}));
+                break;
+            case 18:
+                levelTiles[mapData[i]] = sm3.game.createEntity(new sm3.MapMiniGame(sm3.World01Map.LEVELS.TOADSHOUSE,
+                                        {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
+                                        {left:false,right:false,top:true,bottom:false}));
+                break;
             default:
                 console.log("Unknown tile " + mapData[i] + " found at position " + i);
             }
@@ -101,8 +114,31 @@
         };
         
         // attempt to start level
-        enterLevel = function (mapPosition) {
-            ????? start level here            
+        this.enterLevel = function (mapPosition) {
+            var tileType = getMapData(mapPosition);
+            switch(tileType) {
+            case 11:
+                //start level 1
+                break;
+            case 12:
+                //start level 2
+                break;
+            case 13:
+                //start level 3
+                break;
+            case 14:
+                //start level 4
+                break;
+            case 15:
+                //start level 5
+                break;
+            case 16:
+                //start level 6
+                break;
+            case 17:
+                //enter toads house
+                break;
+            }            
         };
         
          //pass in a map position of form {x:0,y:0} and get back the pixel position of the tile
@@ -127,6 +163,8 @@
                 LEVEL03:2,
                 LEVEL04:3,
                 LEVEL05:4,
-                LEVEL06:5
+                LEVEL06:5,
+                TOADSHOUSE:6,
+                SPINGAME:7
                 };
 })();

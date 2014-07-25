@@ -1,6 +1,5 @@
 /*  This is the level representation on the world map.
-    @param position - an object in the form {x:pixels, y:pixels}.
-*/
+    @param position - an object in the form {x:pixels, y:pixels}. */
 sm3.MarioMap = function (position, characterState, initialMapPosition) {
     "use strict";
     var currentCharacterState = characterState;
@@ -24,7 +23,7 @@ sm3.MarioMap = function (position, characterState, initialMapPosition) {
     );
     this.changeAnim("Small");
     
-    var moveSpeed = 100;
+    var moveSpeed = 0.3;
     
     var MOVING = 0;
     var STOPPED = 1;
@@ -32,6 +31,7 @@ sm3.MarioMap = function (position, characterState, initialMapPosition) {
     
     var newPixelPosition;
     this.update = function (dt) {
+        console.log(currentState)
         switch(currentState) {
         case MOVING:
             var xDirection = newPixelPosition.x - position.x;

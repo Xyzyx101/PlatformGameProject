@@ -33,37 +33,38 @@
         default:
             console.log("Unknown level in MapLevels entity");
         }
-        this.addAnim(new sm3.Anim("Blue",[{x:frameSize.width * tileMapColumn, y:0}],[0]));
-        this.addAnim(new sm3.Anim("Pink",[{x:frameSize * tileMapColumn, y:frameSize.y}],[0]));
-        this.addAnim(new sm3.Anim("CompleteBlue",[{x:frameSize * 6, y:0}],[0]));
-        this.addAnim(new sm3.Anim("Pink",[{x:frameSize * 6, y:frameSize.y}],[0]));
+        this.addAnim(new sm3.Anim("Normal",[{x:frameSize.width * tileMapColumn, y:0}],[0]));
+        this.addAnim(new sm3.Anim("Flipped",[{x:frameSize * tileMapColumn, y:frameSize.y}],[0]));
+        this.addAnim(new sm3.Anim("CompleteNormal",[{x:0, y:frameSize.y * 2}],[0]));
+        this.addAnim(new sm3.Anim("CompleteFlipped",[{x:0, y:frameSize.y * 2}],[0]));
             
         var openSides = newOpenSides;
         
-        var BLUE = 0;
-        var PINK = 1;
-        var COMPLETEBLUE = 2;
-        var COMPLETEPINK = 3;
-        var currentState = BLUE;
+        // All of the level tiles flip between normal and flipped when you look at you inventory
+        var NORMAL = 0;
+        var FLIPPED = 1;
+        var COMPLETENORMAL = 2;
+        var COMPLETEFLIPPED = 3;
+        var currentState = NORMAL;
         this.changeState = function (newState) {
             switch(currentState) {
-            case BLUE:
-                this.changeAnim("Blue");
+            case NORMAL:
+                this.changeAnim("Normal");
                 break;
-            case PINK:
-                this.changeAnim("Pink");
+            case FLIPPED:
+                this.changeAnim("Flipped");
                 break;
-            case COMPLETEBLUE:
-                this.changeAnim("CompleteBlue");
+            case COMPLETENORMAL:
+                this.changeAnim("CompleteNormal");
                 break;
-            case COMPLETEPINK:
-                this.changeAnim("CompletePink");
+            case COMPLETEFLIPPED:
+                this.changeAnim("CompleteFlipped");
                 break;
             default:
                 console.log("Error! Unknown state in MapLevel entity");
             }
         };
-        this.changeState(BLUE);
+        this.changeState(NORMAL);
         this.update = function (dt) {};
         this.render = function () {
             this.displayAnim(position.x, position.y);
