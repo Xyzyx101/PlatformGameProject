@@ -1,7 +1,7 @@
 /*  This is an entity that controls the state of the spinning minigame */
 sm3.SpinController = function (spinners) {
     "use strict";
-    sm3.Entity.call(this, "", 0, 0);
+    //sm3.Entity.call(this, "", 0, 0);
 
     var INTRO = 0;
     var SPIN = 1;
@@ -14,13 +14,17 @@ sm3.SpinController = function (spinners) {
         switch(currentState) {
         case INTRO:
             timeAccumulator += dt;
-            if (timeAccumulator > delayTime * 1000 ||
+            if (timeAccumulator > delayTime ||
             sm3.input.getPressed(sm3.JUMP) ||
             sm3.input.getPressed(sm3.START)) {
+                spinners.forEach(function (element) {
+                    element.changeState(sm3.Spinner.STATE.NOTSTARTED);
+                });
                 currentState = SPIN;
             }
             break;
         case SPIN:
+            sm3.game.setBackgroundLayer(new sm3.BackgroundLayer("./images/spinGameBackground.png"));
             var spinnersStopped = 0;
             spinners.forEach(function (element) {
                 if (element.getState() == sm3.Spinner.STATE.STOPPED) {
@@ -38,5 +42,6 @@ sm3.SpinController = function (spinners) {
             break;
         }
     };
+    // There is nothing for render to do.  It is only here because the gameloop will call it I do need the entity to tick
     this.render = function () {};
 };

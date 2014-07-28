@@ -69,6 +69,9 @@
                           frameSize.width,
                           frameSize.height);
         };
+        this.getImage = function () {
+            return image;
+        }
     };
     
     /* A single animation.  Which animation is playing will change based on an entities state machine.

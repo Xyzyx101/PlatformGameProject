@@ -4,9 +4,9 @@ sm3.SpinMiniGame = function () {
     sm3.game.setBackgroundLayer(new sm3.BackgroundLayer("./images/spinGameIntroBackground.png"));
 
     var spinners = [];
-    spinners[0] = sm3.game.createEntity(new sm3.Spinner());
-    spinners[1] = sm3.game.createEntity(new sm3.Spinner());
-    spinners[3] = sm3.game.createEntity(new sm3.Spinner());
+    spinners[0] = sm3.game.createEntity(new sm3.Spinner(sm3.Spinner.WHEEL.FIRST));
+    spinners[1] = sm3.game.createEntity(new sm3.Spinner(sm3.Spinner.WHEEL.SECOND));
+    spinners[3] = sm3.game.createEntity(new sm3.Spinner(sm3.Spinner.WHEEL.THIRD));
 
-    var controller = sm3.game.createEntity(new sm3.SpinController());
+    var controller = sm3.game.createEntity(new sm3.SpinController(spinners));
 };
