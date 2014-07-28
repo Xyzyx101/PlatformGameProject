@@ -7,7 +7,7 @@ sm3.RIGHT = 3;
 sm3.JUMP = 4;
 sm3.ACTION = 5;
 sm3.SELECT = 6;
-sm3.START = 7;	
+sm3.START = 7;
 
 $(document).ready(
     function() {
@@ -31,5 +31,8 @@ $(document).ready(
         sm3.input.bindKey(sm3.input.KEY.OPEN_BRACKET, sm3.SELECT);
         sm3.input.bindKey(sm3.input.KEY.CLOSE_BRACKET, sm3.START);
 
-        sm3.game.loadLevel(sm3.game.TITLESCREEN);
+        //FIXME
+        //sm3.game.loadLevel(sm3.game.TITLESCREEN);
+        sm3.game.loadLevel(sm3.game.SPINMINIGAME);
+
     });

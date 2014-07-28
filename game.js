@@ -1,11 +1,11 @@
 (function () {
-    "use strict";   
+    "use strict";
     sm3.game = (function () {
         function Game () {
             this.TITLESCREEN = 0;
             this.WORLD01MAP = 1;
             this.LEVEL01 = 2;
-            this.MINIGAME = 3;
+            this.SPINMINIGAME = 3;
             var gameState = null;
             var backgroundLayer = null;
             var resources = [];
@@ -15,7 +15,7 @@
             var screenWidth = {width:1024, height:768};
             var frameRequestId;
             var entities = [];
-            
+
             this.loadLevel = function (gameState) {
                 killTick();
                 backgroundLayer = null;
@@ -33,7 +33,9 @@
                     break;
                 case this.LEVEL:
                     break;
-                case this.MINIGAME:
+                case this.SPINMINIGAME:
+                    gameState = this.SPINMINIGAME;
+                    currentLevel = new sm3.SpinMiniGame();
                     break;
                 }
 
@@ -69,7 +71,7 @@
             this.getWorld = function () {
                 return currentWorld;
             };
-            
+
             var lastTick = 0;
             var tick = function (tickTime) {
                 var dt = tickTime - lastTick;
@@ -97,7 +99,9 @@
                     window.cancelAnimationFrame(frameRequestId);
                 }
             };
-            
+
+            // Reset world values if you change world or start a new game.
+            // Idempotent if you invoke the function on the current world.
             var changeWorld = function (newWorld) {
                 if (newWorld != currentWorld){
                     //reset world values here

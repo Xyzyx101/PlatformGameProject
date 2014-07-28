@@ -1,4 +1,4 @@
-/*  This is the level representation on the world map.
+/*  This is the mario representation on the world map.
     @param position - an object in the form {x:pixels, y:pixels}. */
 sm3.MarioMap = function (position, characterState, initialMapPosition) {
     "use strict";
@@ -19,19 +19,18 @@ sm3.MarioMap = function (position, characterState, initialMapPosition) {
     this.addAnim(new sm3.Anim("Racoon",
                 [{x:frameSize.width * 2, y:frameSize.height * 4},
                 {x:frameSize.width * 2, y:frameSize.height * 5}],
-                [0,1])                  
+                [0,1])
     );
     this.changeAnim("Small");
-    
+
     var moveSpeed = 0.3;
-    
+
     var MOVING = 0;
     var STOPPED = 1;
     var currentState = STOPPED;
-    
+
     var newPixelPosition;
     this.update = function (dt) {
-        console.log(currentState)
         switch(currentState) {
         case MOVING:
             var xDirection = newPixelPosition.x - position.x;
@@ -66,7 +65,7 @@ sm3.MarioMap = function (position, characterState, initialMapPosition) {
             if (sm3.input.getPressed(sm3.JUMP) || sm3.input.getPressed(sm3.START)) {
                 sm3.game.getWorld().enterLevel(mapPosition);
             }
-            
+
             var targetPosition;
             switch(true) {
             case sm3.input.getPressed(sm3.UP):
