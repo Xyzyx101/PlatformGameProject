@@ -42,6 +42,7 @@ sm3.SpinController = function (spinners) {
             break;
         }
     };
+    
     // There is nothing for render to do.  It is only here because the gameloop will call it I do need the entity to tick
     this.render = function () {};
 };
