@@ -2,14 +2,9 @@
     "use strict";
     sm3.World01Map = function () {
         sm3.game.setBackgroundLayer(new sm3.BackgroundLayer("./images/world_01_map_base.png"));
-        var EMPTY = 0;
-        var PATH = 1;
-        var TREE = 3;
-        // 11 = level01, 12 = Level02, 13 = level03, ..., level06 = 16;
-        var TOADSHOUSE = 17;
-        var SPINGAME = 18;
-        
-        var mapData = [3, 3, 3, 11, 1, 1, 1, 12, 1, 13, 1, 1, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 1, 1, 1, 1, 3, 3, 3, 1, 1, 14, 1, 1, 3, 3, 3, 3, 3, 0, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 3, 3, 0, 0, 0, 3, 3, 0, 0, 1, 0, 3, 3, 3, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 3, 0, 0, 0, 15, 1, 1, 1, 16, 0, 0, 0, 0, 0, 3];
+              
+        var mapData = [3, 3, 3, 11, 1, 1, 1, 12, 1, 13, 1, 1, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 1, 1, 1, 1, 3, 3, 3, 1, 1, 14, 1, 17, 3, 3, 3, 3, 3, 0, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 18, 3, 3, 0, 0, 0, 3, 3, 0, 0, 1, 0, 3, 3, 3, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 17, 1, 1, 1, 1, 1, 1, 0, 3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 3, 0, 0, 0, 15, 1, 1, 1, 16, 0, 0, 0, 0, 0, 3];
+        var levelObjects = [];
         
         // in pixels
         var TILEWIDTH = 70;
@@ -20,57 +15,57 @@
         var MAPHEIGHT = 9;
         
         var EDGEOFFSET = {x:22, y:20};
-        var levelTiles = {};
+      
         for (var i = 0; i < mapData.length; i++) {
             var tileX = i % MAPWIDTH;
             var tileY = Math.floor(i / MAPWIDTH);
             
             switch (mapData[i]) {
-            case EMPTY:
+            case sm3.World01Map.LEVELS.EMPTY:
                 break;
-            case PATH:
+            case sm3.World01Map.LEVELS.PATH:
             
                 break;
-            case TREE:
+            case sm3.World01Map.LEVELS.TREE:
                 sm3.game.createEntity(new sm3.DancingTree({x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}));
                 break;
-            case 11:
-                 levelTiles[mapData[i]] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL01, 
+            case sm3.World01Map.LEVELS.LEVEL01:
+                levelObjects[i] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL01, 
                                         {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
-                                        {left:false,right:false,top:false,bottom:true}));
+{left:true,right:true,top:true,bottom:true}));// FIX ME                                        {left:false,right:false,top:false,bottom:true}));
                 break;
-            case 12:
-                levelTiles[mapData[i]] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL02, 
+            case sm3.World01Map.LEVELS.LEVEL02:
+                levelObjects[i] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL02, 
                                         {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
-                                        {left:true,right:false,top:false,bottom:false}));
+ {left:true,right:true,top:true,bottom:true}));// FIX ME                                        {left:true,right:false,top:false,bottom:false}));
                 break;
-            case 13:
-                levelTiles[mapData[i]] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL03, 
-                                        {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
-                                        {left:true,right:false,top:false,bottom:false}));
-                break;
-            case 14:
-                levelTiles[mapData[i]] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL04, 
+            case sm3.World01Map.LEVELS.LEVEL03:
+                levelObjects[i] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL03, 
                                         {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
                                         {left:true,right:false,top:false,bottom:false}));
                 break;
-            case 15:
-                levelTiles[mapData[i]] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL05, 
+            case sm3.World01Map.LEVELS.LEVEL04:
+                levelObjects[i] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL04, 
+                                        {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
+                                        {left:true,right:false,top:false,bottom:false}));
+                break;
+            case sm3.World01Map.LEVELS.LEVEL05:
+                levelObjects[i] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL05, 
                                         {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
                                         {left:false,right:false,top:true,bottom:false}));
                 break;
-            case 16:
-                levelTiles[mapData[i]] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL06, 
+            case sm3.World01Map.LEVELS.LEVEL06:
+                levelObjects[i] = sm3.game.createEntity(new sm3.MapLevel(sm3.World01Map.LEVELS.LEVEL06, 
                                         {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
                                         {left:true,right:false,top:false,bottom:false}));
                 break;
-            case 17:
-                levelTiles[mapData[i]] = sm3.game.createEntity(new sm3.MapMiniGame(sm3.World01Map.LEVELS.SPINGAME,
+            case sm3.World01Map.LEVELS.TOADSHOUSE:
+                levelObjects[i] = sm3.game.createEntity(new sm3.MapMiniGame(sm3.World01Map.LEVELS.TOADSHOUSE,
                                         {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
                                         {left:false,right:false,top:true,bottom:false}));
                 break;
-            case 18:
-                levelTiles[mapData[i]] = sm3.game.createEntity(new sm3.MapMiniGame(sm3.World01Map.LEVELS.TOADSHOUSE,
+            case sm3.World01Map.LEVELS.SPINMINIGAME:
+                levelObjects[i] = sm3.game.createEntity(new sm3.MapMiniGame(sm3.World01Map.LEVELS.SPINMINIGAME,
                                         {x : tileX * TILEWIDTH + EDGEOFFSET.x, y : tileY * TILEHEIGHT + EDGEOFFSET.y}, 
                                         {left:false,right:false,top:true,bottom:false}));
                 break;
@@ -97,13 +92,13 @@
                             currentPosition.x > targetPosition.x && openSides.left ||
                             currentPosition.y < targetPosition.y && openSides.bottom ||
                             currentPosition.y > targetPosition.y && openSides.top;
-                if (targetTileType == PATH && passable) {
+                if (targetTileType ==  sm3.World01Map.LEVELS.PATH && passable) {
                     return getPixelPosition(targetPosition);
                 } else {
                     return null;
                 }
             } else {
-                if (targetTileType == PATH) {
+                if (targetTileType ==  sm3.World01Map.LEVELS.PATH) {
                     return getPixelPosition(targetPosition);
                 }
                 if (targetTileType > 10) {
@@ -117,26 +112,29 @@
         this.enterLevel = function (mapPosition) {
             var tileType = getMapData(mapPosition);
             switch(tileType) {
-            case 11:
-                //start level 1
+            case sm3.World01Map.LEVELS.LEVEL01:
+                sm3.game.loadLevel(sm3.game.LEVEL01);
                 break;
-            case 12:
+            case sm3.World01Map.LEVELS.LEVEL02:
                 //start level 2
                 break;
-            case 13:
+            case sm3.World01Map.LEVELS.LEVEL03:
                 //start level 3
                 break;
-            case 14:
+            case sm3.World01Map.LEVELS.LEVEL04:
                 //start level 4
                 break;
-            case 15:
+            case sm3.World01Map.LEVELS.LEVEL05:
                 //start level 5
                 break;
-            case 16:
+            case sm3.World01Map.LEVELS.LEVEL06:
                 //start level 6
                 break;
-            case 17:
-                //enter toads house
+            case sm3.World01Map.LEVELS.TOADSHOUSE:
+                sm3.game.loadLevel(sm3.game.TOADSHOUSE);
+                break;
+            case sm3.World01Map.LEVELS.SPINMINIGAME:
+                sm3.game.loadLevel(sm3.game.SPINMINIGAME);
                 break;
             }            
         };
@@ -157,14 +155,20 @@
                             ));
         
     };
-    sm3.World01Map.LEVELS = 
-                {LEVEL01:0,
-                LEVEL02:1,
-                LEVEL03:2,
-                LEVEL04:3,
-                LEVEL05:4,
-                LEVEL06:5,
-                TOADSHOUSE:6,
-                SPINGAME:7
+    
+    // These constants are not arbitrary.  They must match the tile positions in the .json file.
+    sm3.World01Map.LEVELS = {
+                EMPTY:0,
+                PATH:1,
+                BLOCKED:2,
+                TREE:3,
+                LEVEL01:11,
+                LEVEL02:12,
+                LEVEL03:13,
+                LEVEL04:14,
+                LEVEL05:15,
+                LEVEL06:16,
+                TOADSHOUSE:17,
+                SPINMINIGAME:18
                 };
 })();

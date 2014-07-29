@@ -11,12 +11,12 @@
         sm3.Entity.call(this, "./images/mapTiles.png", 0, frameSize);
         switch(level) {
         case sm3.World01Map.LEVELS.TOADSHOUSE:
-            this.addAnim(new sm3.Anim("Normal",[{x:frameSize.width * 6, y:0}],[0]));
-            this.addAnim(new sm3.Anim("Complete",[{x:frameSize.width * 6, y:frameSize.y * 1}],[0]));
-            break;
-        case sm3.World01Map.LEVELS.SPINGAME:
             this.addAnim(new sm3.Anim("Normal",[{x:frameSize.width * 7, y:0}],[0]));
             this.addAnim(new sm3.Anim("Complete",[{x:frameSize.width * 7, y:frameSize.y * 1}],[0]));
+            break;
+        case sm3.World01Map.LEVELS.SPINMINIGAME:
+            this.addAnim(new sm3.Anim("Normal",[{x:frameSize.width * 6, y:0}],[0]));
+            this.addAnim(new sm3.Anim("Complete",[{x:frameSize.width * 6, y:frameSize.y * 1}],[0]));
             break;
         default:
             console.log("Unknown level in MapMiniGame entity");

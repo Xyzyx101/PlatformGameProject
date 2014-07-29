@@ -1,5 +1,5 @@
 /*  This is an entity that controls the state of the spinning minigame */
-sm3.SpinController = function (spinners) {
+sm3.SpinController = function (spinners, extraLifeEntity) {
     "use strict";
     //sm3.Entity.call(this, "", 0, 0);
 
@@ -9,17 +9,20 @@ sm3.SpinController = function (spinners) {
     var currentState = INTRO;
 
     var timeAccumulator = 0;
-    var delayTime = 8000; //8 second delay at intro screen
+    var introDelayTime = 8000; // 8 second delay at intro screen
+    var completeDelayTime = 4000; // 3 second delay before going back to the map
     this.update = function (dt) {
         switch(currentState) {
         case INTRO:
             timeAccumulator += dt;
-            if (timeAccumulator > delayTime ||
+            if (timeAccumulator > introDelayTime ||
             sm3.input.getPressed(sm3.JUMP) ||
+            sm3.input.getPressed(sm3.ACTION) ||
             sm3.input.getPressed(sm3.START)) {
                 spinners.forEach(function (element) {
                     element.changeState(sm3.Spinner.STATE.NOTSTARTED);
                 });
+                timeAccumulator = 0; //reset so it can be used again at the end
                 currentState = SPIN;
             }
             break;
@@ -36,9 +39,23 @@ sm3.SpinController = function (spinners) {
             }
             break;
         case COMPLETE:
-
-            //TODO - do some shit to see if you won
-
+            var tiles = [];
+            spinners.forEach( function (element, index) {
+                    tiles[index] = element.getStoppedTile();
+                });
+            if (tiles[0] == tiles[1] && tiles[0] == tiles[2]) {
+                extraLifeEntity.winWithTile(tiles[0]);
+            }
+            timeAccumulator += dt;
+            if (timeAccumulator > completeDelayTime) {
+                // if the world exist go back to the map.  If there is no map then the player
+                // must have entered the game from the title screen.
+                if ( sm3.game.getWorld() ) {
+                    sm3.game.loadLevel(sm3.game.WORLD01MAP);
+                } else {
+                    sm3.game.loadLevel(sm3.game.TITLESCREEN);
+                }
+            }
             break;
         }
     };

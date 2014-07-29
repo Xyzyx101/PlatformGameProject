@@ -31,7 +31,7 @@
                     currentState = START;
                 }
                 if (sm3.input.getPressed(sm3.JUMP) || sm3.input.getPressed(sm3.START)) {
-                    console.log("match game!");
+                    sm3.game.loadLevel(sm3.game.SPINMINIGAME);
                 }
                 break;
             }

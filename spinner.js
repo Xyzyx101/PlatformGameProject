@@ -87,7 +87,7 @@ sm3.Spinner = function (wheel) {
             rotateSpinner(dt);
             var stopPosition = getTileOffset(selectedTile);
             if (currentSpeed == 0.4 &&
-                Math.abs(wheelPosition.x - stopPosition) < 50) {
+                Math.abs(wheelPosition.x - stopPosition) < 35) {
                 currentSpeed = 0;
                 wheelPosition.x = stopPosition;
                 this.changeState(sm3.Spinner.STATE.STOPPED);
@@ -117,7 +117,14 @@ sm3.Spinner = function (wheel) {
 
     // returns an integer to represent which tile is at the center of the screen
     var getCurrentTile = function () {
-        return Math.floor((wheelPosition.x + frameSize.width / 2) / tileWidth);
+        var tile = Math.floor((wheelPosition.x + frameSize.width / 2) / tileWidth);
+        if (tile == 6) {
+            // if you stop on the last mushroom you can see the end of the sprite.
+            // This just fudges the answer so when you click the last mushroom you stop
+            // on the second last one.
+            tile = 4;
+        }
+        return tile;
     };
     var getTileOffset = function (tile) {
         var centerOffset  = Math.floor((frameSize.width - tileWidth) / 2);

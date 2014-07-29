@@ -31,8 +31,6 @@ $(document).ready(
         sm3.input.bindKey(sm3.input.KEY.OPEN_BRACKET, sm3.SELECT);
         sm3.input.bindKey(sm3.input.KEY.CLOSE_BRACKET, sm3.START);
 
-        //FIXME
-        //sm3.game.loadLevel(sm3.game.TITLESCREEN);
-        sm3.game.loadLevel(sm3.game.SPINMINIGAME);
-
+        sm3.game.loadLevel(sm3.game.TITLESCREEN);
+        
     });
