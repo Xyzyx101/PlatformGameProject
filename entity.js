@@ -2,8 +2,11 @@
     "use strict";
     sm3.Entity = function (src, newFrameDelay, newFrameSize) {
         var image;
+        this.getImage = function () {
+            return image;
+        };
         if (sm3.imageManager.getImage(src)) {
-            image = sm3.imageManager(src);
+            image = sm3.imageManager.getImage(src);
             this.isLoaded = true;
         } else {
             this.isLoaded = false;
@@ -15,7 +18,7 @@
             // of this function rather than the context of image.
             image.addEventListener("load", loadHandler.bind(this), false);
             image.src = src;
-            sm3.game.addResource(this);
+            sm3.game.addResource(src, this);
         }
 
         var currentFrame = 0;
@@ -74,9 +77,6 @@
                               dy,
                               frameSize.width,
                               frameSize.height);
-        };
-        this.getImage = function () {
-            return image;
         };
     };
 

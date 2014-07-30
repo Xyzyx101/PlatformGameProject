@@ -3,15 +3,15 @@
     sm3.imageManager = (function () {
         function ImageManager () {
             var images = {};
-            this.getImage = function (fullName) {
-                if (images[fullName]) {
-                    return images[fullName];
+            this.getImage = function (path) {
+                if (images[path]) {
+                    return images[path];
                 } else {
                     return null;
                 }
             };
-            this.storeImage = function (fullName, image) {
-                images[fullName] = image;
+            this.storeImage = function (path, image) {
+                images[path] = image;
             };
             this.purgeImages = function () {
                 images = {};

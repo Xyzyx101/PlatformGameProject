@@ -56,7 +56,8 @@
                 }
                 setTimeout(verifyAllResourcesLoaded, 0);
             };
-            this.addResource = function (newResource) {
+            this.addResource = function (path, newResource) {
+                sm3.imageManager.storeImage(path, newResource.getImage());
                 resources.push(newResource);
             };
             this.setBackgroundLayer = function (layer) {

@@ -13,8 +13,8 @@
         var MAPWIDTH = 14;
         var MAPHEIGHT = 9;
         var levelObjects = [];
-        for (var i = 0; i < MAPWIDTH; i++) {
-            levelObjects[i] = [];
+        for (var column = 0; column < MAPWIDTH; column++) {
+            levelObjects[column] = [];
         }
 
         var EDGEOFFSET = {x:22, y:20};
