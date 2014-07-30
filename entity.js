@@ -1,16 +1,22 @@
 (function () {
     "use strict";
     sm3.Entity = function (src, newFrameDelay, newFrameSize) {
-        this.isLoaded = false;
-        var loadHandler = function () {
-             this.isLoaded = true;
-        };
-        var image = new Image();
-        // loadHandler.bind(this) should make loadHandler run in the context
-        // of this function rather than the context of image.
-        image.addEventListener("load", loadHandler.bind(this), false);
-        image.src = src;
-        sm3.game.addResource(this);
+        var image;
+        if (sm3.imageManager.getImage(src)) {
+            image = sm3.imageManager(src);
+            this.isLoaded = true;
+        } else {
+            this.isLoaded = false;
+            var loadHandler = function () {
+                this.isLoaded = true;
+            };
+            image = new Image();
+            // loadHandler.bind(this) should make loadHandler run in the context
+            // of this function rather than the context of image.
+            image.addEventListener("load", loadHandler.bind(this), false);
+            image.src = src;
+            sm3.game.addResource(this);
+        }
 
         var currentFrame = 0;
         var frameDelay = newFrameDelay; // frame delay in milliseconds. 0 will not animate
@@ -60,27 +66,27 @@
             var sx = currentAnim.frames[myFrame].x;
             var sy = currentAnim.frames[myFrame].y;
             sm3.ctx.drawImage(image,
-                          sx,
-                          sy,
-                          frameSize.width,
-                          frameSize.height,
-                          dx,
-                          dy,
-                          frameSize.width,
-                          frameSize.height);
+                              sx,
+                              sy,
+                              frameSize.width,
+                              frameSize.height,
+                              dx,
+                              dy,
+                              frameSize.width,
+                              frameSize.height);
         };
         this.getImage = function () {
             return image;
         };
     };
-    
+
     /* A single animation.  Which animation is playing will change based on an entities state machine.
-        @name - animation name
-        @frames - [{x:0,y:0},{x:0,y:0},{x:0,y:0}] - array of position vectors from the source image
-        @playOrder - [0,1,2,3,2,1,0] - animation frame sequence */
+     @name - animation name
+     @frames - [{x:0,y:0},{x:0,y:0},{x:0,y:0}] - array of position vectors from the source image
+     @playOrder - [0,1,2,3,2,1,0] - animation frame sequence */
     sm3.Anim = function (name, frames, playOrder) {
-            this.name = name;
-            this.frames = frames;
-            this.playOrder = playOrder;
+        this.name = name;
+        this.frames = frames;
+        this.playOrder = playOrder;
     };
 })();

@@ -21,9 +21,9 @@
         default:
             console.log("Unknown level in MapMiniGame entity");
         }
-                    
+
         var openSides = newOpenSides;
-        
+
         var NORMAL = 0;
         var COMPLETE = 1;
         var currentState = NORMAL;
@@ -46,6 +46,9 @@
         };
         this.getOpenSides = function () {
             return openSides;
+        };
+        this.getType = function () {
+            return level;
         };
     };
 })();

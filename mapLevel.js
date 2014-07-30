@@ -37,9 +37,9 @@
         this.addAnim(new sm3.Anim("Flipped",[{x:frameSize * tileMapColumn, y:frameSize.y}],[0]));
         this.addAnim(new sm3.Anim("CompleteNormal",[{x:0, y:frameSize.y * 2}],[0]));
         this.addAnim(new sm3.Anim("CompleteFlipped",[{x:0, y:frameSize.y * 2}],[0]));
-            
+
         var openSides = newOpenSides;
-        
+
         // All of the level tiles flip between normal and flipped when you look at you inventory
         var NORMAL = 0;
         var FLIPPED = 1;
@@ -71,6 +71,9 @@
         };
         this.getOpenSides = function () {
             return openSides;
+        };
+        this.getType = function () {
+            return level;
         };
     };
 })();
