@@ -1,11 +1,7 @@
- /*  This is the level representation on the world map.
-    @param level - a number constant from sm3.World01Map.LEVELS
-    @param position - an object in the form {x:pixels, y:pixels}.
-    @param newOpenSided - is object containing booleans for which sides are open.  This is used
-    to block the player from passing incomplete levels. {left:false,right:false,top:false,bottom:false}
- */
+ 
 (function () {
     sm3.MapMiniGame = function (level, position, newOpenSides) {
+        console.log("sm3.MapMiniGame is deprecated and should not be called");
         "use strict";
         var frameSize = {width:70,height:64};
         sm3.Entity.call(this, "./images/mapTiles.png", 0, frameSize);
@@ -26,13 +22,13 @@
 
         var NORMAL = 0;
         var COMPLETE = 1;
-        var currentState = NORMAL;
+        var currentState = sm3.MapMiniGame.STATE.NORMAL;
         this.changeState = function (newState) {
             switch(currentState) {
-            case NORMAL:
+            case sm3.MapMiniGame.STATE.NORMAL:
                 this.changeAnim("Normal");
                 break;
-            case COMPLETE:
+            case sm3.MapMiniGame.STATE.COMPLETE:
                 this.changeAnim("Complete");
                 break;
             default:
@@ -50,5 +46,9 @@
         this.getType = function () {
             return level;
         };
+    };
+    sm3.MapMiniGame.STATE = {
+        NORMAL:0,
+        COMPLETE:1
     };
 })();

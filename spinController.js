@@ -51,6 +51,7 @@ sm3.SpinController = function (spinners, extraLifeEntity) {
                 // if the world exist go back to the map.  If there is no map then the player
                 // must have entered the game from the title screen.
                 if ( sm3.game.getWorld() ) {
+                    sm3.game.getWorld().completeActiveLevel();
                     sm3.game.loadLevel(sm3.game.WORLD01MAP);
                 } else {
                     sm3.game.loadLevel(sm3.game.TITLESCREEN);

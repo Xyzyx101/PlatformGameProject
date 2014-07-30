@@ -9,7 +9,7 @@
         "use strict";
         var frameSize = {width:70,height:64};
         sm3.Entity.call(this, "./images/mapTiles.png", 0, frameSize);
-        var tileMapColumn = 0;
+        var tileMapColumn = null;
         switch(level) {
         //FIXME
         case sm3.World01Map.LEVELS.LEVEL01:
@@ -30,41 +30,54 @@
         case sm3.World01Map.LEVELS.LEVEL06:
             tileMapColumn = 5;
             break;
+        case sm3.World01Map.LEVELS.TOADSHOUSE:
+            this.addAnim(new sm3.Anim("Normal",[{x:frameSize.width * 7, y:0}],[0]));
+            this.addAnim(new sm3.Anim("CompleteNormal",[{x:frameSize.width * 7, y:frameSize.height}],[0]));
+            break;
+        case sm3.World01Map.LEVELS.SPINMINIGAME:
+            this.addAnim(new sm3.Anim("Normal",[{x:frameSize.width * 6, y:0}],[0]));
+            this.addAnim(new sm3.Anim("CompleteNormal",[{x:frameSize.width * 6, y:frameSize.height}],[0]));
+            break;
         default:
             console.log("Unknown level in MapLevels entity");
         }
-        this.addAnim(new sm3.Anim("Normal",[{x:frameSize.width * tileMapColumn, y:0}],[0]));
-        this.addAnim(new sm3.Anim("Flipped",[{x:frameSize * tileMapColumn, y:frameSize.y}],[0]));
-        this.addAnim(new sm3.Anim("CompleteNormal",[{x:0, y:frameSize.y * 2}],[0]));
-        this.addAnim(new sm3.Anim("CompleteFlipped",[{x:0, y:frameSize.y * 2}],[0]));
-
+        if (tileMapColumn !== null) {
+            this.addAnim(new sm3.Anim("Normal",[{x:frameSize.width * tileMapColumn, y:0}],[0]));
+            this.addAnim(new sm3.Anim("Flipped",[{x:frameSize.width * tileMapColumn, y:frameSize.height}],[0]));
+            this.addAnim(new sm3.Anim("CompleteNormal",[{x:frameSize.width * tileMapColumn, y:frameSize.height}],[0]));
+            this.addAnim(new sm3.Anim("CompleteFlipped",[{x:frameSize.width * tileMapColumn, y:frameSize.height}],[0]));
+        }
+            
         var openSides = newOpenSides;
-
+        
         // All of the level tiles flip between normal and flipped when you look at you inventory
-        var NORMAL = 0;
-        var FLIPPED = 1;
-        var COMPLETENORMAL = 2;
-        var COMPLETEFLIPPED = 3;
-        var currentState = NORMAL;
         this.changeState = function (newState) {
-            switch(currentState) {
-            case NORMAL:
+            currentState = newState;
+            switch(newState) {
+            case sm3.MapLevel.STATE.NORMAL:
                 this.changeAnim("Normal");
                 break;
-            case FLIPPED:
+            case sm3.MapLevel.STATE.FLIPPED:
                 this.changeAnim("Flipped");
                 break;
-            case COMPLETENORMAL:
+            case sm3.MapLevel.STATE.COMPLETENORMAL:
                 this.changeAnim("CompleteNormal");
                 break;
-            case COMPLETEFLIPPED:
+            case sm3.MapLevel.STATE.COMPLETEFLIPPED:
                 this.changeAnim("CompleteFlipped");
                 break;
             default:
                 console.log("Error! Unknown state in MapLevel entity");
             }
         };
-        this.changeState(NORMAL);
+        
+        var currentState = sm3.MapLevel.STATE.NORMAL;
+        this.changeState(currentState);
+        
+        this.getState = function () {
+            return currentState;
+        }
+        
         this.update = function (dt) {};
         this.render = function () {
             this.displayAnim(position.x, position.y);
@@ -76,4 +89,9 @@
             return level;
         };
     };
+    sm3.MapLevel.STATE = {
+        NORMAL:0,
+        FLIPPED:1,
+        COMPLETENORMAL:2,
+        COMPLETEFLIPPED:3};
 })();

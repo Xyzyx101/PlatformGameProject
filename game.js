@@ -66,7 +66,7 @@
                 levelSize.height = layer.height;
                 return layer;
             };
-            this.createEntity = function (entity) {
+            this.registerEntity = function (entity) {
                 entities.push(entity);
                 return entity;
             };

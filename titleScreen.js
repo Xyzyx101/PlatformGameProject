@@ -2,8 +2,8 @@
     "use strict";
     sm3.TitleScreen = function () {
         sm3.game.setBackgroundLayer(new sm3.BackgroundLayer("./images/titleScreenBackground.png"));
-        sm3.game.createEntity(new StartMenu());
-        sm3.game.createEntity(new FlashingTitle());
+        sm3.game.registerEntity(new StartMenu());
+        sm3.game.registerEntity(new FlashingTitle());
     };
 
     function StartMenu () {

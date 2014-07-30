@@ -71,7 +71,6 @@ sm3.Spinner = function (wheel) {
         case sm3.Spinner.STATE.SPINNING:
             rotateSpinner(dt);
             if ( sm3.input.getPressed(sm3.JUMP) || sm3.input.getPressed(sm3.JUMP) ) {
-                console.log(wheelPosition.x);
                 selectedTile = getCurrentTile();
                 this.changeState(sm3.Spinner.STATE.SLOWING);
             }
