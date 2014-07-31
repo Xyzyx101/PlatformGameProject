@@ -32,7 +32,7 @@
                     changeWorld(currentLevel);
                     break;
                 case this.LEVEL01:
-                    currentLevel = new sm3.Level01();
+                    currentLevel = new sm3.Level1_1();
                     break;
                 case this.SPINMINIGAME:
                     gameState = this.SPINMINIGAME;

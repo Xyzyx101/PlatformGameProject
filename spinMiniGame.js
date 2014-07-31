@@ -7,7 +7,7 @@ sm3.SpinMiniGame = function (returnToLevel) {
     spinners[0] = sm3.game.registerEntity(new sm3.Spinner(sm3.Spinner.WHEEL.FIRST));
     spinners[1] = sm3.game.registerEntity(new sm3.Spinner(sm3.Spinner.WHEEL.SECOND));
     spinners[2] = sm3.game.registerEntity(new sm3.Spinner(sm3.Spinner.WHEEL.THIRD));
-    
+
     var extraLife = sm3.game.registerEntity(new sm3.MiniGameExtraLife());
 
     var controller = sm3.game.registerEntity(new sm3.SpinController(spinners, extraLife));
