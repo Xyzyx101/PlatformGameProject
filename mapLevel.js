@@ -76,7 +76,7 @@
         
         this.getState = function () {
             return currentState;
-        }
+        };
         
         this.update = function (dt) {};
         this.render = function () {

@@ -1,3 +1,5 @@
+/* This is an .json export from Tiled.  I only added the variable declaration at the top. */
+sm3.Level1_1.data = 
 { "height":42,
  "layers":[
         {
@@ -62,4 +64,4 @@
  "tilewidth":64,
  "version":1,
  "width":176
-}
+};

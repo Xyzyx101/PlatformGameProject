@@ -195,10 +195,10 @@
                 }
             }
             sm3.game.registerEntity(mario);
-        }
+        };
         this.completeActiveLevel = function () {
             mapObjects[activeLevel.x][activeLevel.y].changeState(sm3.MapLevel.STATE.COMPLETENORMAL);
-        }
+        };
     };
 
     // These constants are not arbitrary.  They must match the tile positions in the .json file.
