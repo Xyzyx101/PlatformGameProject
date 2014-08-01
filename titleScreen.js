@@ -42,7 +42,7 @@
     }
 
     function FlashingTitle () {
-        sm3.Entity.call(this, "./images/flashingTitle3.png", 120, {width:170,height:177});
+        sm3.Entity.call(this, "./images/flashingTitle3.png", 120, {width:170,height:140});
         this.addAnim(new sm3.Anim("Flash",
                               [{x:0,y:0},
                                {x:170,y:0},
@@ -59,4 +59,3 @@
         };
     }
 })();
-    
