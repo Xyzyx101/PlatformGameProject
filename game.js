@@ -80,7 +80,9 @@
                 lastTick = tickTime;
                 update(dt);
                 render();
-                frameRequestId = window.requestAnimationFrame(tick);
+                if (frameRequestId) {
+                    frameRequestId = window.requestAnimationFrame(tick);
+                }
             };
 
             var update = function (dt) {
@@ -99,6 +101,7 @@
             var killTick = function () {
                 if (frameRequestId) {
                     window.cancelAnimationFrame(frameRequestId);
+                    frameRequestId = null;
                 }
             };
 

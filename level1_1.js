@@ -14,8 +14,8 @@
         var geometryTileCoords = this.getTiles(levelGeometry, "levelTiles");
         var staticGeometryLayer = new sm3.StaticGeometryLayer("./images/levelTiles.png",
                                                               levelGeometry,
-                                                              geometryTileCoords,
-                                                              levelSize);
+                                                              geometryTileCoords
+                                                              );
 
         var staticCollision = this.getDataLayer("collision");
         var mario = new sm3.SmallMario({x:256,y:1600});
