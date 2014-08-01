@@ -15,7 +15,7 @@
 
         var mapWidthPixels = mapWidth * tileWidth;
         var mapHeightPixels = mapHeight * tileHeight;
-        this.getMapWidthPixels = function () {
+        this.getMapPixelSize = function () {
             return {width:mapWidthPixels,height:mapHeightPixels};
         };
 
@@ -62,6 +62,7 @@
         this.getTileAtPos = function (position) {
             var tileX = Math.floor(position.x / tileWidth);
             var tileY = Math.floor(position.y / tileHeight);
+            return {x:tileX,y:tileY};
         };
 
         var getTileCoords = function (tile, tileSet) {

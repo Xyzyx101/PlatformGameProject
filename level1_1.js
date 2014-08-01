@@ -14,23 +14,25 @@
         var geometryTileCoords = this.getTiles(levelGeometry, "levelTiles");
         var staticGeometryLayer = new sm3.StaticGeometryLayer("./images/levelTiles.png",
                                                               levelGeometry,
-                                                              geometryTileCoords
+                                                              geometryTileCoords,
+                                                              this
                                                               );
-
         var staticCollision = this.getDataLayer("collision");
-        var mario = new sm3.SmallMario({x:256,y:1600});
+        var mario = sm3.game.registerEntity(new sm3.SmallMario({x:256,y:1600}));
 
         var groundLimit = 1728; //this is the bottom limit the camera will show
         var camera = new sm3.Camera(mario, levelSize, groundLimit);
 
         this.update = function (dt) {
             //TODO collision.update();
-            camera.updateView();
+            var cameraPos = camera.updateView();
+            mario.setCameraOffset(cameraPos);
             //TODO camera.updateActiveEntities();
         };
         this.render = function () {
             var cameraPos = camera.getCameraPos();
             staticGeometryLayer.render(cameraPos);
+            
         };
 
     };

@@ -15,6 +15,7 @@ sm3.Camera = function (mario, levelSize, groundLimit) {
         cameraPos.y = mario.getPosition().y - (screenHeight - mario.getFrameSize().height) * 0.5;
         cameraPos.y = Math.max(cameraPos.y, 0);
         cameraPos.y = Math.min(cameraPos.y, groundLimit - screenHeight, levelSize.height - screenHeight);
+        return cameraPos;
     };
     this.getCameraPos = function () {
         return cameraPos;
