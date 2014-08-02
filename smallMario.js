@@ -2,9 +2,10 @@
  @param position - an object in the form {x:pixels, y:pixels}. */
 sm3.SmallMario = function (initialPosition, level) {
     "use strict";
+    var that = this;
     var frameSize = {width:64,height:64};
     var cameraOffest = {x:0, y:0};
-    
+
     this.getFrameSize = function () {
         return frameSize;
     };
@@ -12,7 +13,7 @@ sm3.SmallMario = function (initialPosition, level) {
     this.getPosition = function () {
         return position;
     };
-    
+    var flip = true;
     sm3.Entity.call(this, "./images/smallMario.png", 100, frameSize);
     this.addAnim(new sm3.Anim("Stopped",
                               [{x:0, y:0}],
@@ -93,36 +94,51 @@ sm3.SmallMario = function (initialPosition, level) {
             } else {
                 decelerate(dt);
             }
+            if (sm3.input.getPressed(sm3.LEFT) && velocity.x > 0) {
+                that.changeState(sm3.SmallMario.STATE.CHANGEDIRECTION);
+            } else if (sm3.input.getPressed(sm3.RIGHT) && velocity.x < 0) {
+                that.changeState(sm3.SmallMario.STATE.CHANGEDIRECTION);
+            }
+            checkFlip();
             break;
         case sm3.SmallMario.STATE.JUMPING:
-        
+
+            checkFlip();
             break;
         case sm3.SmallMario.STATE.CHANGEDIRECTION:
-        
+            if (sm3.input.getHeld(sm3.LEFT) && velocity.x > 0) {
+                that.changeState(sm3.SmallMario.STATE.CHANGEDIRECTION);
+                accelerate(dt, sm3.LEFT);
+            } else if (sm3.input.getHeld(sm3.RIGHT) && velocity.x < 0) {
+                that.changeState(sm3.SmallMario.STATE.CHANGEDIRECTION);
+                accelerate(dt, sm3.RIGHT);
+            } else {
+                that.changeState(sm3.SmallMario.STATE.RUNNING);
+            }
             break;
         case sm3.SmallMario.STATE.PREFLY:
-        
+
             break;
         case sm3.SmallMario.STATE.SLIDE:
-        
+
             break;
         case sm3.SmallMario.STATE.TUBE:
-        
+
             break;
         case sm3.SmallMario.STATE.CLIMB:
-        
+
             break;
         case sm3.SmallMario.STATE.DIE:
-        
+
             break;
         case sm3.SmallMario.STATE.SWIM:
-        
+
             break;
         case sm3.SmallMario.STATE.FLY:
-        
+
             break;
         case sm3.SmallMario.STATE.CARRYSHELL:
-        
+
             break;
         }
         updatePosition(dt);
@@ -138,39 +154,46 @@ sm3.SmallMario = function (initialPosition, level) {
             this.changeAnim("Run");
             break;
         case sm3.SmallMario.STATE.JUMPING:
-        
+
             break;
         case sm3.SmallMario.STATE.CHANGEDIRECTION:
-        
+            this.changeAnim("ChangeDirection");
             break;
         case sm3.SmallMario.STATE.PREFLY:
-        
+
             break;
         case sm3.SmallMario.STATE.SLIDE:
-        
+
             break;
         case sm3.SmallMario.STATE.TUBE:
-        
+
             break;
         case sm3.SmallMario.STATE.CLIMB:
-        
+
             break;
         case sm3.SmallMario.STATE.DIE:
-        
+
             break;
         case sm3.SmallMario.STATE.SWIM:
-        
+
             break;
         case sm3.SmallMario.STATE.FLY:
-        
+
             break;
         case sm3.SmallMario.STATE.CARRYSHELL:
-        
+
             break;
         }
     };
     this.render = function () {
-        this.displayAnim(position.x - cameraOffest.x, position.y - cameraOffest.y);
+        sm3.ctx.save();
+        if (flip) {
+            sm3.ctx.scale(-1,1);
+            this.displayAnim(-(position.x - cameraOffest.x + frameSize.width), position.y - cameraOffest.y);
+        } else {
+            this.displayAnim(position.x - cameraOffest.x, position.y - cameraOffest.y);
+        }
+        sm3.ctx.restore();
     };
     this.setCameraOffset = function (cameraPosition) {
         cameraOffest = cameraPosition;
@@ -181,7 +204,7 @@ sm3.SmallMario = function (initialPosition, level) {
     this.getCollisionBox = function () {
 
     };
-    var maxVelocity = {x:1.0, y:1.0};
+    var maxVelocity = {x:0.6, y:1.0};
     var velocity = {x:0, y:0};
     var acceleration = 0.001;
     var accelerate = function (dt, direction) {
@@ -196,7 +219,7 @@ sm3.SmallMario = function (initialPosition, level) {
             velocity.x = -1 * maxVelocity.x;
         }
     };
-    var decelerate function (dt) {
+    var decelerate = function (dt) {
         if (velocity.x < 0) {
             velocity.x += acceleration * dt;
         } else if (velocity.x > 0) {
@@ -204,12 +227,23 @@ sm3.SmallMario = function (initialPosition, level) {
         }
         if (Math.abs(velocity.x) < 0.35) {
             velocity.x = 0;
-            this.changeState(sm3.SmallMario.STATE.STOPPED);
+            that.changeState(sm3.SmallMario.STATE.STOPPED);
         }
     };
     var updatePosition = function (dt) {
         position.x += velocity.x * dt;
         position.y += velocity.y * dt;
+    };
+    var checkFlip = function () {
+        if (flip) {
+            if (velocity.x < 0) {
+                flip = false;
+            }
+        } else {
+            if (velocity.x > 0) {
+                flip = true;
+            }
+        }
     };
 };
 
