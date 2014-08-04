@@ -17,7 +17,13 @@ sm3.Camera = function (mario, levelSize, groundLimit) {
         cameraPos.y = Math.min(cameraPos.y, groundLimit - screenHeight, levelSize.height - screenHeight);
         return cameraPos;
     };
-    this.getCameraPos = function () {
+    this.getCameraPosition = function () {
         return cameraPos;
+    };
+    this.getScreenBounds = function () {
+        return {minX: cameraPos.x,
+                maxX: cameraPos.x + screenWidth,
+                minY: cameraPos.y,
+                maxY: cameraPos.y + screenHeight};
     };
 };

@@ -77,6 +77,7 @@
             var lastTick = 0;
             var tick = function (tickTime) {
                 var dt = tickTime - lastTick;
+                //console.log(1 / (dt/1000) + ":fps");
                 lastTick = tickTime;
                 update(dt);
                 render();

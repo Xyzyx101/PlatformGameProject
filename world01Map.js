@@ -6,9 +6,9 @@
 (function () {
     "use strict";
     sm3.World01Map = function () {
-        
+
     sm3.game.setBackgroundLayer(new sm3.BackgroundLayer("./images/world_01_map_base.png"));
-    
+
         var persistantWorld = sm3.game.getWorld();
         // If the current game world is a World01Map then return the saved map state rather than create a new one.
         if (persistantWorld && persistantWorld.__proto__.constructor == sm3.World01Map) {
@@ -133,8 +133,9 @@
         this.enterLevel = function (mapPosition) {
             activeLevel = mapPosition;
             var targetLevelState = mapObjects[mapPosition.x][mapPosition.y].getState();
-            if ( targetLevelState == sm3.MapLevel.STATE.COMPLETENORMAL ||
-                targetLevelState == sm3.MapLevel.STATE.COMPLETEFLIPPED ) {
+            if ( targetLevelState &&
+                 (targetLevelState == sm3.MapLevel.STATE.COMPLETENORMAL ||
+                  targetLevelState == sm3.MapLevel.STATE.COMPLETEFLIPPED) ) {
                     console.log("Level already complete");
                     activeLevel = null;
                     return;
@@ -175,13 +176,13 @@
         function getPixelPosition(mapPosition) {
             return {x:mapPosition.x * TILEWIDTH + EDGEOFFSET.x, y:mapPosition.y * TILEHEIGHT + EDGEOFFSET.y};
         }
-        
+
         //DELETEME
         //pass in mapTile {x:0,y:0} and gets tile type back
         function getMapData(mapTile) {
             return mapData[mapTile.y * MAPWIDTH + mapTile.x];
         }
-        
+
         var initialMapPosition = {x:1,y:2};
         var mario = sm3.game.registerEntity(new sm3.MarioMap(
                             getPixelPosition(initialMapPosition),

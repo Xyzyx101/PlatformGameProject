@@ -9,21 +9,17 @@ sm3.StaticGeometryLayer = function (src, levelGeometry, geometryTileCoords, leve
     var image = this.getImage();
     this.render = function (cameraPos) {
         var topLeftCornerTile = level.getTileAtPos(cameraPos);
-        
+
         var firstColumn = Math.max(topLeftCornerTile.x - 1, 0);
-        var lastColumn = Math.min(topLeftCornerTile.x + screenTiles.width + 1, mapSize.width);
-        
+        var lastColumn = Math.min(topLeftCornerTile.x + screenTiles.width + 1, mapSize.width - 1);
+
         var firstRow = Math.max(topLeftCornerTile.y - 1, 0);
-        var lastRow = Math.min(topLeftCornerTile.y + screenTiles.height + 1, mapSize.height);
-        
+        var lastRow = Math.min(topLeftCornerTile.y + screenTiles.height + 1, mapSize.height - 1);
+
         for (var row = firstRow; row <= lastRow; row++) {
             for (var column = firstColumn; column <= lastColumn; column++) {
                 var tile = levelGeometry[row][column];
-                if (tile === 0) {
-                    continue;
-                } else {
-                    "foo";
-                }
+                if (tile === 0) {continue;} // skips to next iteration if no tile
                 var screenX = column * tileSize.width - cameraPos.x;
                 var screenY = row * tileSize.height - cameraPos.y;
                 var tileCoords = geometryTileCoords[tile];

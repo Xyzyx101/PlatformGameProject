@@ -27,4 +27,9 @@ sm3.MapObject = function (type, position) {
     this.getType = function () {
         return type;
     };
+
+    // This is used when a player presses the enter level button on an object that is not a level
+    this.getState = function () {
+        return null;
+    };
 };

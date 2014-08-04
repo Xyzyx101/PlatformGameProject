@@ -75,7 +75,6 @@ sm3.SmallMario = function (initialPosition, level) {
     var currentState = sm3.SmallMario.STATE.STOPPED;
 
     this.update = function (dt) {
-        console.log(currentState);
         switch(currentState) {
         case sm3.SmallMario.STATE.STOPPED:
             if (sm3.input.getPressed(sm3.LEFT)) {
