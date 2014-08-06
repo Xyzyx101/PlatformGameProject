@@ -93,7 +93,7 @@
         };
 
         var createBB = function (row, col) {
-            var position = {x:row * tileWidth, y:col * tileHeight};
+            var position = {x:col * tileWidth, y:row * tileHeight};
             var tileSize = {width:tileWidth, height:tileHeight};
             var bbSize = tileSize;
             var offset = {x:0, y:0};

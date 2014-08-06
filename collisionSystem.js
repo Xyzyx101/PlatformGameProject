@@ -14,8 +14,8 @@ sm3.CollisionSystem = function () {
     // Passive colliders are objects that active colliders need to test against but will
     //  never collide with anything on their own like blocks and game geometry
     var passiveColliders = [];
-    this.addPassiveCollider = function (collider) {
-        passiveColliders.push(collider);
+    this.addPassiveCollider = function (type, bb) {
+        passiveColliders.push({type:type, bb:bb});
     };
     this.clearColliderLists = function () {
         passiveColliders = [];
@@ -23,12 +23,16 @@ sm3.CollisionSystem = function () {
     };
 
     var collisions = [];
-    this.collisionDetection = function () {
+    this.detectCollisions = function () {
         activeColliders.forEach(function (element) {
             collisions = [];
-            checkStaticCollision(element);
             //checkActiveCollisions(element);
-            element.resolveCollisions(collisions);
+            //element.resolveActiveCollisions(collisions);
+            collisions = [];
+            checkStaticCollision(element);
+            if (collisions.length) {
+                element.resolveStaticCollisions(collisions);
+            }
         });
     };
 
@@ -36,42 +40,48 @@ sm3.CollisionSystem = function () {
         // note this assumes only aabb are allowed.  If I add slopes in the future this will need to change.
         var bb = firstElement.getBoundingBox();
         var axisProjX = new sm3.AxisProjection(bb.center.x - bb.halfWidth,
-                                                          bb.center.x + bb.halfWidth);
-        var axisProjY = new sm3.AxisiProjection(bb.p.y - b.halfHeight,
-                                                          bb.center.y + bb.halfHeight);
+                                               bb.center.x + bb.halfWidth);
+        var axisProjY = new sm3.AxisProjection(bb.center.y - bb.halfHeight,
+                                               bb.center.y + bb.halfHeight);
         passiveColliders.forEach(function (secondElement) {
-            var targetBB = secondElement.getBoundingBox();
+            var targetBB = secondElement.bb;
             var targetAxisProjX = new sm3.AxisProjection(targetBB.center.x - targetBB.halfWidth,
-                                                          targetBB.center.x + targetBB.halfWidth);
+                                                         targetBB.center.x + targetBB.halfWidth);
             var targetAxisProjY = new sm3.AxisProjection(targetBB.center.y - targetBB.halfHeight,
-                                                          targetBB.center.y + targetBB.halfHeight);
+                                                         targetBB.center.y + targetBB.halfHeight);
             if (overlap(axisProjX, targetAxisProjX) &&
                 overlap(axisProjY, targetAxisProjY)) {
-                var xOverlap = bb.halfWidth + targetBB.halfwidth - (targetBB.center.x - bb.center.x);
-                var yOverlap = bb.halfHeight + targetBB.halfHeight - (targetBB.center.y - bb.center.y);
-                var collisionVector = {x: xOverlap,
-                                       y: yOverlap};
-                var collision = new sm3.Collision(secondElement.getType(), collisionVector);
-                collisions.add(collision);
+
+                var xOverlap = bb.halfWidth + targetBB.halfWidth - Math.abs(bb.center.x - targetBB.center.x);
+                var yOverlap = bb.halfHeight + targetBB.halfHeight - Math.abs(bb.center.y - targetBB.center.y);
+                var collisionVector = {};
+                if (Math.abs(xOverlap) > Math.abs(yOverlap)) {
+                    if (bb.center.y < targetBB.center.y) {
+                        collisionVector = {x: 0, y: -yOverlap};
+                    } else {
+                        collisionVector = {x: 0, y: yOverlap};
+                    }
+                } else {
+                    if(bb.center.x < targetBB.center.y) {
+                        collisionVector = {x: -xOverlap, y: 0};
+                    } else {
+                        collisionVector = {x: xOverlap, y: 0};
+                    }
+                }
+
+                var collision = new sm3.Collision(secondElement.type, collisionVector);
+                collisions.push(collision);
             }
         });
     };
 
-    // pass in a vector {x:0,y:0} and get back normalized vector in the same form
-    var normalize = function (vector) {
-        var magnitude = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
-        return {x: vector.x / magnitude, y: vector.y / magnitude};
-    };
-
     // pass in two objects of type sm3.AxisProjection and returns true if they overlap
     var overlap = function (projA, projB) {
-        if (projA.min < projB.max && projA.max > projB.max) {
-            return true;
+        if (projA.min > projB.max ||
+            projA.max < projB.min) {
+            return false;
         }
-        if (projA.max > projB.min && projB.min < projB.min) {
-            return true;
-        }
-        return false;
+        return true;
     };
 
 };
@@ -109,6 +119,6 @@ sm3.AxisProjection = function (min, max) {
  * @param objectType should be a constant from sm3.ObjectTypes
  * @parama collisionVector should be a normalized vector in the form {x:0, y:0} */
 sm3.Collision = function (objectType, collisionVector) {
-    this.objectType = objectType;
+    this.type = objectType;
     this.collisionVector = collisionVector;
 };

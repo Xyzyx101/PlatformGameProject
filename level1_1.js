@@ -49,14 +49,16 @@
                 while (col < botRightTile.x) {
                     var bb = staticBBoxes[row][col];
                     if (bb) {
-                        collision.addPassiveCollider(bb);
+                        var tileType = staticCollisionData[row][col];
+                        collision.addPassiveCollider(tileType, bb);
                     }
                     col++;
                 }
                 row++;
             }
-            //add passive colliders
-
+            // the collision detection module will use the active collider list created above and
+            // pass the collision results back to each entity for resolution.
+            collision.detectCollisions();
             mario.setCameraOffset(cameraPos);
         };
         this.render = function () {
