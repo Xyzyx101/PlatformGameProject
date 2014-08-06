@@ -26,7 +26,11 @@ sm3.SmallMario = function (initialPosition, level) {
     var maxVelocity = {x:0.6, y:1.0};
     var velocity = {x:0, y:0};
     var acceleration = 0.001; // horizontal acceleration
-    var gravity = 0.0005; // vertical acceleration
+    var gravity = 0.005; // vertical acceleration
+    var initialJumpVelocity = 0.045;
+    var holdJumpAcceleration = 0.005;
+    var jumpTimer = 0;
+    var maxHoldJumpTime = 400; // 800 ms
 
     sm3.Entity.call(this, "./images/smallMario.png", 100, frameSize);
     this.addAnim(new sm3.Anim("Stopped",
@@ -89,6 +93,9 @@ sm3.SmallMario = function (initialPosition, level) {
     var currentState = sm3.SmallMario.STATE.STOPPED;
 
     this.update = function (dt) {
+            
+        console.log(currentState + isStanding.toString());
+    
         switch(currentState) {
         case sm3.SmallMario.STATE.STOPPED:
             if (sm3.input.getPressed(sm3.LEFT)) {
@@ -97,6 +104,9 @@ sm3.SmallMario = function (initialPosition, level) {
             } else if ( sm3.input.getPressed(sm3.RIGHT)) {
                 this.changeState(sm3.SmallMario.STATE.RUNNING);
                 accelerate(dt, sm3.RIGHT);
+            }
+            if (sm3.input.getPressed(sm3.JUMP)) {
+                jump(dt);
             }
             break;
         case sm3.SmallMario.STATE.RUNNING:
@@ -112,12 +122,25 @@ sm3.SmallMario = function (initialPosition, level) {
             } else if (sm3.input.getPressed(sm3.RIGHT) && velocity.x < 0) {
                 that.changeState(sm3.SmallMario.STATE.CHANGEDIRECTION);
             }
+            if (sm3.input.getPressed(sm3.JUMP)) {
+                jump(dt);
+            }
             checkFlip();
             break;
         case sm3.SmallMario.STATE.JUMPING:
+            if (sm3.input.getHeld(sm3.LEFT)) {
+                accelerate(dt, sm3.LEFT);
+            } else if ( sm3.input.getHeld(sm3.RIGHT)) {
+                accelerate(dt, sm3.RIGHT);
+            }
             if (isStanding) {
                 this.changeState(sm3.SmallMario.STATE.RUNNING);
-            };
+            }
+            if ( sm3.input.getHeld(sm3.JUMP) &&
+                 jumpTimer < maxHoldJumpTime) {
+             velocity.y -= holdJumpAcceleration * dt; 
+            }
+            jumpTimer += dt;
             checkFlip();
             break;
         case sm3.SmallMario.STATE.CHANGEDIRECTION:
@@ -155,12 +178,16 @@ sm3.SmallMario = function (initialPosition, level) {
         case sm3.SmallMario.STATE.CARRYSHELL:
 
             break;
+        default:
+            console.log("Error in smallMario update unknown state");
         }
         fall(dt);
+        isStanding = false;
         updatePosition(dt);
         bb.updatePosition(position); //update bounding box with new position
         this.animate(dt);
     };
+    
     this.changeState = function (newState) {
         currentState = newState;
         switch(newState) {
@@ -171,7 +198,8 @@ sm3.SmallMario = function (initialPosition, level) {
             this.changeAnim("Run");
             break;
         case sm3.SmallMario.STATE.JUMPING:
-
+            jumpTimer = 0;
+            this.changeAnim("Jump");
             break;
         case sm3.SmallMario.STATE.CHANGEDIRECTION:
             this.changeAnim("ChangeDirection");
@@ -200,8 +228,11 @@ sm3.SmallMario = function (initialPosition, level) {
         case sm3.SmallMario.STATE.CARRYSHELL:
 
             break;
+        default:
+            console.log("Error in smallMario changeState unknown state");
         }
     };
+    
     this.render = function () {
         sm3.ctx.save();
         if (flip) {
@@ -212,61 +243,40 @@ sm3.SmallMario = function (initialPosition, level) {
         }
         sm3.ctx.restore();
     };
+    
     this.setCameraOffset = function (cameraPosition) {
         cameraOffest = cameraPosition;
     };
 
-
-    //DELETEME
-    this.resolveStaticCollisions = function (collisions) {
+    this.resolveStaticCollision = function (collision, dt) {
         // all of the collisions with static geometry will be added together and treated as one collision
-        var sumCollisions = {x:0, y:0};
-        var greatestMagnitude = 0;
-        collisions.forEach(function (element) {
-            var magnitude = 0;
-            switch(element.type) {
+        switch(collision.type) {
             case sm3.CollisionSystem.COLLISIONTILES.SOLID:
-                sumCollisions = sm3.utils.vectorAdd(sumCollisions, element.collisionVector);
-                magnitude = sm3.utils.magnitude(element.collisionVector);
-                greatestMagnitude = Math.max(magnitude, greatestMagnitude);
+                updateCollisionPhysics(collision.collisionVector, dt);
                 break;
             case sm3.CollisionSystem.COLLISIONTILES.TOPONLY:
                 // top only tiles are ignored unless the angle is within 45 of vertical
-                var collisionAngle = sm3.utils.getAngle(element.collisionVector);
-                if (collisionAngle > Math.PI * 0.25 &&
-                    collisionAngle < Math.PI * 0.75) {
-                    sm3.utils.vectorAdd(sumCollisions, element.collisionVector);
-                    magnitude = sm3.utils.magnitude(element.collisionVector);
-                    greatestMagnitude = Math.max(magnitude, greatestMagnitude);
+                var collisionAngle = sm3.utils.getAngle(collision.collisionVector);
+                if (collisionAngle < Math.PI * -0.25 &&
+                    collisionAngle > Math.PI * -0.75 &&
+                    collision.collisionVector.y > -15 &&
+                    velocity.y < 0) {
+                    if (collision.collisionVector.y > -15 ) {
+                        updateCollisionPhysics(collision.collisionVector, dt);
+                    }
                 }
                 break;
             default:
                 console.log("Error in smallMario.resolveStaticCollisions() Unknown tile type");
             }
-
-        });
-        var collisionDirection = sm3.utils.normalize(sumCollisions);
-        var finalCollisionVector = sm3.utils.vectorMul(collisionDirection, greatestMagnitude);
-        updateIsStanding(finalCollisionVector);
-        updateCollisionPhysics(finalCollisionVector);
-    };
-
-    //good one
-    this.resolveStaticCollision = function (collision, dt) {
-        // all of the collisions with static geometry will be added together and treated as one collision
-
-        //FIXME
-        //updateIsStanding(co);
-        updateCollisionPhysics(collision.collisionVector, dt);
+         updateIsStanding(collision.collisionVector);
     };
 
     var updateIsStanding = function (collisionVector) {
         var finalCollisionAngle = sm3.utils.getAngle(collisionVector);
-        if (finalCollisionAngle > Math.PI * 0.25 &&
-            finalCollisionAngle < Math.PI * 0.75) {
+        if (finalCollisionAngle < Math.PI * -0.25 &&
+            finalCollisionAngle > Math.PI * -0.75) {
             isStanding = true;
-        } else {
-            isStanding = false;
         }
     };
 
@@ -329,9 +339,15 @@ sm3.SmallMario = function (initialPosition, level) {
         } else {
             velocity.y += gravity * dt;
             velocity.y = Math.min(velocity.y, maxVelocity.y);
-        };
+        }
     };
-
+    
+    var jump = function (dt) {
+        velocity.y -= initialJumpVelocity * dt;
+        isStanding = false;
+        that.changeState(sm3.SmallMario.STATE.JUMPING);
+    };
+    
     var updatePosition = function (dt) {
         position.x += velocity.x * dt;
         position.y += velocity.y * dt;

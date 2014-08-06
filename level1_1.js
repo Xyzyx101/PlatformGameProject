@@ -69,6 +69,6 @@
         function registerEntity (entity) {
             entities.push(entity);
             return entity;
-        };
+        }
     };
 })();
