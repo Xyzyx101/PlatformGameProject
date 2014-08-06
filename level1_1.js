@@ -58,7 +58,7 @@
             }
             // the collision detection module will use the active collider list created above and
             // pass the collision results back to each entity for resolution.
-            collision.detectCollisions();
+            collision.detectCollisions(dt);
             mario.setCameraOffset(cameraPos);
         };
         this.render = function () {

@@ -15,8 +15,8 @@ sm3.SmallMario = function (initialPosition, level) {
     };
 
     // Bounding box is centered in x and at the bottom in y
-    var bbSize = {width:60, height:60};
-    var bbOffset = {x:2, y:4};
+    var bbSize = {width:46, height:56};
+    var bbOffset = {x:9, y:8};
     var bb = new sm3.BoundingBox(position, frameSize, bbSize, bbOffset);
     this.getBoundingBox = function () {
         return bb;
@@ -160,7 +160,6 @@ sm3.SmallMario = function (initialPosition, level) {
         updatePosition(dt);
         bb.updatePosition(position); //update bounding box with new position
         this.animate(dt);
-        //console.log("vel: " + velocity.x);
     };
     this.changeState = function (newState) {
         currentState = newState;
@@ -218,6 +217,7 @@ sm3.SmallMario = function (initialPosition, level) {
     };
 
 
+    //DELETEME
     this.resolveStaticCollisions = function (collisions) {
         // all of the collisions with static geometry will be added together and treated as one collision
         var sumCollisions = {x:0, y:0};
@@ -251,6 +251,15 @@ sm3.SmallMario = function (initialPosition, level) {
         updateCollisionPhysics(finalCollisionVector);
     };
 
+    //good one
+    this.resolveStaticCollision = function (collision, dt) {
+        // all of the collisions with static geometry will be added together and treated as one collision
+
+        //FIXME
+        //updateIsStanding(co);
+        updateCollisionPhysics(collision.collisionVector, dt);
+    };
+
     var updateIsStanding = function (collisionVector) {
         var finalCollisionAngle = sm3.utils.getAngle(collisionVector);
         if (finalCollisionAngle > Math.PI * 0.25 &&
@@ -261,8 +270,8 @@ sm3.SmallMario = function (initialPosition, level) {
         }
     };
 
-    var updateCollisionPhysics = function (collisionVector) {
-        console.log(collisionVector);
+    var updateCollisionPhysics = function (collisionVector, dt) {
+        //console.log("posY: " + position.y + " velY: " + velocity.y + " collY: " + collisionVector.y);
 
         if ( (collisionVector.x < 0 && velocity.x < 0) ||
              (collisionVector.x > 0 && velocity.x > 0) ) {
@@ -271,20 +280,21 @@ sm3.SmallMario = function (initialPosition, level) {
 
         position.x += collisionVector.x;
         position.y += collisionVector.y;
+        bb.updatePosition(position);
 
-        // collision vector is always added becasue if you are moving negative then you add a negative
+        // collision vector is always added because if you are moving negative then you add a negative
         // the min/max stops you from bouncing off the collision
-        /*
+
         if (velocity.x > 0) {
-            velocity.x = Math.max(0, velocity.x + collisionVector.x);
+            velocity.x = Math.max(0, velocity.x + collisionVector.x / dt);
         } else {
-            velocity.x = Math.min(0, velocity.x + collisionVector.x);
+            velocity.x = Math.min(0, velocity.x + collisionVector.x / dt);
         }
         if (velocity.y > 0) {
-            velocity.y = Math.max(0, velocity.y + collisionVector.y);
+            velocity.y = Math.max(0, velocity.y + collisionVector.y / dt);
         } else {
-            velocity.y = Math.min(0, velocity.y + collisionVector.y);
-        }*/
+            velocity.y = Math.min(0, velocity.y + collisionVector.y / dt);
+        }
 
     };
 

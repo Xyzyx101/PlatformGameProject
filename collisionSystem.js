@@ -23,20 +23,20 @@ sm3.CollisionSystem = function () {
     };
 
     var collisions = [];
-    this.detectCollisions = function () {
+    this.detectCollisions = function (dt) {
         activeColliders.forEach(function (element) {
             collisions = [];
             //checkActiveCollisions(element);
             //element.resolveActiveCollisions(collisions);
             collisions = [];
-            checkStaticCollision(element);
+            checkStaticCollision(element, dt);
             if (collisions.length) {
-                element.resolveStaticCollisions(collisions);
+                //element.resolveStaticCollisions(collisions);
             }
         });
     };
 
-    var checkStaticCollision = function (firstElement) {
+    var checkStaticCollision = function (firstElement, dt) {
         // note this assumes only aabb are allowed.  If I add slopes in the future this will need to change.
         var bb = firstElement.getBoundingBox();
         var axisProjX = new sm3.AxisProjection(bb.center.x - bb.halfWidth,
@@ -55,6 +55,7 @@ sm3.CollisionSystem = function () {
                 var xOverlap = bb.halfWidth + targetBB.halfWidth - Math.abs(bb.center.x - targetBB.center.x);
                 var yOverlap = bb.halfHeight + targetBB.halfHeight - Math.abs(bb.center.y - targetBB.center.y);
                 var collisionVector = {};
+
                 if (Math.abs(xOverlap) > Math.abs(yOverlap)) {
                     if (bb.center.y < targetBB.center.y) {
                         collisionVector = {x: 0, y: -yOverlap};
@@ -67,10 +68,11 @@ sm3.CollisionSystem = function () {
                     } else {
                         collisionVector = {x: xOverlap, y: 0};
                     }
-                }
+                 }
 
                 var collision = new sm3.Collision(secondElement.type, collisionVector);
-                collisions.push(collision);
+                firstElement.resolveStaticCollision(collision, dt);
+                //collisions.push(collision);
             }
         });
     };
