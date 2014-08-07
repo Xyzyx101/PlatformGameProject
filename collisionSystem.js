@@ -22,17 +22,10 @@ sm3.CollisionSystem = function () {
         activeColliders = [];
     };
 
-    var collisions = [];
     this.detectCollisions = function (dt) {
         activeColliders.forEach(function (element) {
-            collisions = [];
             //checkActiveCollisions(element);
-            //element.resolveActiveCollisions(collisions);
-            collisions = [];
             checkStaticCollision(element, dt);
-            if (collisions.length) {
-                //element.resolveStaticCollisions(collisions);
-            }
         });
     };
 
@@ -63,16 +56,14 @@ sm3.CollisionSystem = function () {
                         collisionVector = {x: 0, y: yOverlap};
                     }
                 } else {
-                    if(bb.center.x < targetBB.center.y) {
+                    if(bb.center.x < targetBB.center.x) {
                         collisionVector = {x: -xOverlap, y: 0};
                     } else {
                         collisionVector = {x: xOverlap, y: 0};
                     }
                  }
-
                 var collision = new sm3.Collision(secondElement.type, collisionVector);
                 firstElement.resolveStaticCollision(collision, dt);
-                //collisions.push(collision);
             }
         });
     };

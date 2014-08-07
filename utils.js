@@ -27,6 +27,23 @@
             this.getAngle = function (vector) {
                 return Math.atan2(vector.y, vector.x);
             };
+
+            // Absolute subtract - decrease the magnitude of a by the magnitude of b keeping the sign
+            // the return value will never flip sign but will be closer to 0 by b amount
+            //  absSub(10, 8)   // result 2
+            //  absSub(-10, 8)  // result -2
+            //  absSub(-10, -8) // result -2
+            //  absSub(8, 10)   // result 0
+            this.absSub = function (a , b) {
+                if (a === 0) return 0;
+                if (Math.abs(b) > Math.abs(a)) return 0;
+                var returnValue = 0;
+                if (a > 0) {
+                    return Math.max(a-Math.abs(b), 0);
+                } else {
+                    return Math.min(a+Math.abs(b), 0);
+                }
+            };
         }
         return new Util();
     })();

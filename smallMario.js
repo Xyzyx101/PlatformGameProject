@@ -23,12 +23,12 @@ sm3.SmallMario = function (initialPosition, level) {
     };
     var flip = true;
     var isStanding = false;
-    var maxVelocity = {x:0.6, y:1.0};
+    var maxVelocity = {x:30, y:30.0};
     var velocity = {x:0, y:0};
-    var acceleration = 0.001; // horizontal acceleration
-    var gravity = 0.005; // vertical acceleration
-    var initialJumpVelocity = 0.045;
-    var holdJumpAcceleration = 0.005;
+    var acceleration = 0.03; // horizontal acceleration
+    var gravity = 0.1; // vertical acceleration
+    var initialJumpVelocity = 1;
+    var holdJumpAcceleration = 0.05;
     var jumpTimer = 0;
     var maxHoldJumpTime = 400; // 800 ms
 
@@ -93,9 +93,6 @@ sm3.SmallMario = function (initialPosition, level) {
     var currentState = sm3.SmallMario.STATE.STOPPED;
 
     this.update = function (dt) {
-            
-        console.log(currentState + isStanding.toString());
-    
         switch(currentState) {
         case sm3.SmallMario.STATE.STOPPED:
             if (sm3.input.getPressed(sm3.LEFT)) {
@@ -138,7 +135,7 @@ sm3.SmallMario = function (initialPosition, level) {
             }
             if ( sm3.input.getHeld(sm3.JUMP) &&
                  jumpTimer < maxHoldJumpTime) {
-             velocity.y -= holdJumpAcceleration * dt; 
+             velocity.y -= holdJumpAcceleration * dt;
             }
             jumpTimer += dt;
             checkFlip();
@@ -186,8 +183,12 @@ sm3.SmallMario = function (initialPosition, level) {
         updatePosition(dt);
         bb.updatePosition(position); //update bounding box with new position
         this.animate(dt);
+
+        //FIXME
+        //console.log("posX: " + position.x + "velX: " + velocity.x)
+        //console.log("posY: " + position.y + "velY: " + velocity.y)
     };
-    
+
     this.changeState = function (newState) {
         currentState = newState;
         switch(newState) {
@@ -232,7 +233,7 @@ sm3.SmallMario = function (initialPosition, level) {
             console.log("Error in smallMario changeState unknown state");
         }
     };
-    
+
     this.render = function () {
         sm3.ctx.save();
         if (flip) {
@@ -243,7 +244,7 @@ sm3.SmallMario = function (initialPosition, level) {
         }
         sm3.ctx.restore();
     };
-    
+
     this.setCameraOffset = function (cameraPosition) {
         cameraOffest = cameraPosition;
     };
@@ -269,7 +270,7 @@ sm3.SmallMario = function (initialPosition, level) {
             default:
                 console.log("Error in smallMario.resolveStaticCollisions() Unknown tile type");
             }
-         updateIsStanding(collision.collisionVector);
+        updateIsStanding(collision.collisionVector);
     };
 
     var updateIsStanding = function (collisionVector) {
@@ -281,10 +282,14 @@ sm3.SmallMario = function (initialPosition, level) {
     };
 
     var updateCollisionPhysics = function (collisionVector, dt) {
-        //console.log("posY: " + position.y + " velY: " + velocity.y + " collY: " + collisionVector.y);
-
+        // this ignores wierd buggy collision when a collision vector tries
+        // to push you in a direction you are already going
         if ( (collisionVector.x < 0 && velocity.x < 0) ||
              (collisionVector.x > 0 && velocity.x > 0) ) {
+            return;
+        }
+        if ( (collisionVector.y < 0 && velocity.y < 0) ||
+             (collisionVector.y > 0 && velocity.y > 0) ) {
             return;
         }
 
@@ -292,20 +297,8 @@ sm3.SmallMario = function (initialPosition, level) {
         position.y += collisionVector.y;
         bb.updatePosition(position);
 
-        // collision vector is always added because if you are moving negative then you add a negative
-        // the min/max stops you from bouncing off the collision
-
-        if (velocity.x > 0) {
-            velocity.x = Math.max(0, velocity.x + collisionVector.x / dt);
-        } else {
-            velocity.x = Math.min(0, velocity.x + collisionVector.x / dt);
-        }
-        if (velocity.y > 0) {
-            velocity.y = Math.max(0, velocity.y + collisionVector.y / dt);
-        } else {
-            velocity.y = Math.min(0, velocity.y + collisionVector.y / dt);
-        }
-
+        velocity.x = sm3.utils.absSub(velocity.x, collisionVector.x);
+        velocity.y = sm3.utils.absSub(velocity.y, collisionVector.y);
     };
 
     var accelerate = function (dt, direction) {
@@ -322,11 +315,7 @@ sm3.SmallMario = function (initialPosition, level) {
     };
 
     var decelerate = function (dt) {
-        if (velocity.x < 0) {
-            velocity.x += acceleration * dt;
-        } else if (velocity.x > 0) {
-            velocity.x -= acceleration * dt;
-        }
+        velocity.x = sm3.utils.absSub(velocity.x, acceleration * dt);
         if (Math.abs(velocity.x) < 0.35) {
             velocity.x = 0;
             that.changeState(sm3.SmallMario.STATE.STOPPED);
@@ -341,16 +330,17 @@ sm3.SmallMario = function (initialPosition, level) {
             velocity.y = Math.min(velocity.y, maxVelocity.y);
         }
     };
-    
+
     var jump = function (dt) {
         velocity.y -= initialJumpVelocity * dt;
         isStanding = false;
         that.changeState(sm3.SmallMario.STATE.JUMPING);
     };
-    
+
     var updatePosition = function (dt) {
-        position.x += velocity.x * dt;
-        position.y += velocity.y * dt;
+        //FIXME
+        position.x += velocity.x; // * dt;
+        position.y += velocity.y; // * dt;
     };
 
     // check flip does nothing when velocity is 0.  if you come to a stop
