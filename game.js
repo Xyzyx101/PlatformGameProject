@@ -70,6 +70,10 @@
                 entities.push(entity);
                 return entity;
             };
+            this.destroy = function (entity) {
+                var index = entities.indexOf(entity);
+                entities.splice(index, 1);
+            };
             this.getWorld = function () {
                 return currentWorld;
             };
@@ -87,7 +91,7 @@
 
             var leftOverTime = 0;
             var update = function (dt) {
-                var fixedUpdateTime = 10;
+                var fixedUpdateTime = 20;
                 var totalTime = dt + leftOverTime;
                 while(totalTime > fixedUpdateTime) {
                     entities.forEach( function(element) {

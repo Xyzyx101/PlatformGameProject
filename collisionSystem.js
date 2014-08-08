@@ -24,9 +24,17 @@ sm3.CollisionSystem = function () {
 
     this.detectCollisions = function (dt) {
         activeColliders.forEach(function (element) {
-            //checkActiveCollisions(element);
-            checkStaticCollision(element, dt);
-        });
+            var interactsWithList = element.getInteractsWithList();
+            if (interactsWithList) {
+                // this is a short circuit to eliminate useless checks
+                // coins for example will return null and not be checked
+                // coins still need to be in the activeColliders list because mario will interact with them
+                checkActiveCollisions(element, interactsWithList,  dt);
+            }
+            if (element.interactsWithStaticGeometry()) {
+                checkStaticCollision(element, dt);
+            }
+         });
     };
 
     var checkStaticCollision = function (firstElement, dt) {
@@ -68,6 +76,51 @@ sm3.CollisionSystem = function () {
         });
     };
 
+    var checkActiveCollisions = function (firstElement, interactsWithList, dt) {
+        var bb = firstElement.getBoundingBox();
+        var axisProjX = new sm3.AxisProjection(bb.center.x - bb.halfWidth,
+                                               bb.center.x + bb.halfWidth);
+        var axisProjY = new sm3.AxisProjection(bb.center.y - bb.halfHeight,
+                                               bb.center.y + bb.halfHeight);
+        activeColliders.forEach(function (secondElement) {
+            if (firstElement==secondElement) {return;}
+            var type = secondElement.getType();
+            if (interactsWithList.indexOf(type) == -1) {
+                // this short circuit skips checks for interaction we don't care about
+                // a goomba will not have coins on its interacts with list
+                return;
+            }
+            var targetBB = secondElement.getBoundingBox();
+            var targetAxisProjX = new sm3.AxisProjection(targetBB.center.x - targetBB.halfWidth,
+                                                         targetBB.center.x + targetBB.halfWidth);
+            var targetAxisProjY = new sm3.AxisProjection(targetBB.center.y - targetBB.halfHeight,
+                                                         targetBB.center.y + targetBB.halfHeight);
+            if (overlap(axisProjX, targetAxisProjX) &&
+                overlap(axisProjY, targetAxisProjY)) {
+
+                var xOverlap = bb.halfWidth + targetBB.halfWidth - Math.abs(bb.center.x - targetBB.center.x);
+                var yOverlap = bb.halfHeight + targetBB.halfHeight - Math.abs(bb.center.y - targetBB.center.y);
+                var collisionVector = {};
+
+                if (Math.abs(xOverlap) > Math.abs(yOverlap)) {
+                    if (bb.center.y < targetBB.center.y) {
+                        collisionVector = {x: 0, y: -yOverlap};
+                    } else {
+                        collisionVector = {x: 0, y: yOverlap};
+                    }
+                } else {
+                    if(bb.center.x < targetBB.center.x) {
+                        collisionVector = {x: -xOverlap, y: 0};
+                    } else {
+                        collisionVector = {x: xOverlap, y: 0};
+                    }
+                 }
+                var collision = new sm3.Collision(type, collisionVector);
+                firstElement.resolveActiveCollision(collision, dt);
+            }
+        });
+    };
+
     // pass in two objects of type sm3.AxisProjection and returns true if they overlap
     var overlap = function (projA, projB) {
         if (projA.min > projB.max ||
@@ -82,7 +135,8 @@ sm3.CollisionSystem = function () {
 // These are not arbitrary and must match the tilemap!
 sm3.CollisionSystem.COLLISIONTILES = {EMPTY:0,
                                       SOLID:1,
-                                      TOPONLY:2};
+                                      TOPONLY:2,
+                                      DEATH:3};
 
 /* a bounding box object that should be a property of anything affected by the collision system
  * @param position is pixel space position of the top left corner {x:0, y:0}

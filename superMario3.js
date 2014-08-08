@@ -20,7 +20,7 @@ $(document).ready(
         gameElement.append(canvas);
         //canvas.addEventListener("mousedown", mousedownHandler, false);
         sm3.ctx = canvas.getContext("2d");
-        
+
         //var input = new sm3.Input();
         sm3.input.bindKey(sm3.input.KEY.W, sm3.UP);
         sm3.input.bindKey(sm3.input.KEY.A, sm3.LEFT);
@@ -28,6 +28,8 @@ $(document).ready(
         sm3.input.bindKey(sm3.input.KEY.D, sm3.RIGHT);
         sm3.input.bindKey(sm3.input.KEY.COMMA, sm3.ACTION);
         sm3.input.bindKey(sm3.input.KEY.PERIOD, sm3.JUMP);
+        sm3.input.bindKey(sm3.input.KEY.N, sm3.ACTION);
+        sm3.input.bindKey(sm3.input.KEY.M, sm3.JUMP);
         sm3.input.bindKey(sm3.input.KEY.OPEN_BRACKET, sm3.SELECT);
         sm3.input.bindKey(sm3.input.KEY.CLOSE_BRACKET, sm3.START);
 

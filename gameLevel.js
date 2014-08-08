@@ -84,8 +84,11 @@
                     case sm3.CollisionSystem.COLLISIONTILES.TOPONLY:
                         bbArray[row][col] = createBB(row, col);
                         break;
+                    case sm3.CollisionSystem.COLLISIONTILES.DEATH:
+                        bbArray[row][col] = createBB(row, col);
+                        break;
                     default:
-                        console.log("Error in buildStaticBBArray - unkown tiletype");
+                        console.log("Error in buildStaticBBArray - unknown tiletype");
                     }
                 }
             }
@@ -140,5 +143,16 @@
             }
             return layerData;
         };
+    };
+    // These types need to match up to the entity tiles layer from the tiled map
+    sm3.GameLevel.ENTITYTYPE = {
+        COIN:1,
+        COINBLOCK:2,
+        LEAFBLOCK:3,
+        GOOMBA:4,
+        KOOPA:5,
+        FLYINGGOOMBA:6,
+        FLYINGKOOPA:7,
+        MARIO:9999
     };
 })();
