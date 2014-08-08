@@ -20,7 +20,7 @@ $(document).ready(
         gameElement.append(canvas);
         //canvas.addEventListener("mousedown", mousedownHandler, false);
         sm3.ctx = canvas.getContext("2d");
-
+        
         //var input = new sm3.Input();
         sm3.input.bindKey(sm3.input.KEY.W, sm3.UP);
         sm3.input.bindKey(sm3.input.KEY.A, sm3.LEFT);
@@ -32,5 +32,5 @@ $(document).ready(
         sm3.input.bindKey(sm3.input.KEY.CLOSE_BRACKET, sm3.START);
 
         sm3.game.loadLevel(sm3.game.TITLESCREEN);
-        
+
     });

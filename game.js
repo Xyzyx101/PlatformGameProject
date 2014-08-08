@@ -77,7 +77,6 @@
             var lastTick = 0;
             var tick = function (tickTime) {
                 var dt = tickTime - lastTick;
-                //console.log(1 / (dt/1000) + ":fps");
                 lastTick = tickTime;
                 update(dt);
                 render();
@@ -86,10 +85,17 @@
                 }
             };
 
+            var leftOverTime = 0;
             var update = function (dt) {
-                entities.forEach( function(element) {
-                    element.update(dt);
-                });
+                var fixedUpdateTime = 10;
+                var totalTime = dt + leftOverTime;
+                while(totalTime > fixedUpdateTime) {
+                    entities.forEach( function(element) {
+                        element.update(fixedUpdateTime);
+                    });
+                    totalTime -= fixedUpdateTime;
+                };
+                leftOverTime = totalTime;
             };
 
             var render = function () {

@@ -23,14 +23,19 @@ sm3.SmallMario = function (initialPosition, level) {
     };
     var flip = true;
     var isStanding = false;
-    var maxVelocity = {x:30, y:30.0};
+    var isFast = false; // this is true when you hold the run button
+    var maxVelocity = {walk:325,
+                       run:500,
+                       fly:750,
+                       y:800.0};
     var velocity = {x:0, y:0};
-    var acceleration = 0.03; // horizontal acceleration
-    var gravity = 0.1; // vertical acceleration
-    var initialJumpVelocity = 1;
-    var holdJumpAcceleration = 0.05;
+    var acceleration = {walk:0.5,
+                        run:0.1}; // horizontal acceleration
+    var gravity = 2.4; // vertical acceleration
+    var initialJumpVelocity = 750;
+    var holdJumpAcceleration = 200;
     var jumpTimer = 0;
-    var maxHoldJumpTime = 400; // 800 ms
+    var maxHoldJumpTime = 400;
 
     sm3.Entity.call(this, "./images/smallMario.png", 100, frameSize);
     this.addAnim(new sm3.Anim("Stopped",
@@ -93,6 +98,7 @@ sm3.SmallMario = function (initialPosition, level) {
     var currentState = sm3.SmallMario.STATE.STOPPED;
 
     this.update = function (dt) {
+        isFast = sm3.input.getHeld(sm3.ACTION);
         switch(currentState) {
         case sm3.SmallMario.STATE.STOPPED:
             if (sm3.input.getPressed(sm3.LEFT)) {
@@ -103,14 +109,21 @@ sm3.SmallMario = function (initialPosition, level) {
                 accelerate(dt, sm3.RIGHT);
             }
             if (sm3.input.getPressed(sm3.JUMP)) {
+                that.changeState(sm3.SmallMario.STATE.JUMPING);
                 jump(dt);
             }
             break;
         case sm3.SmallMario.STATE.RUNNING:
             if (sm3.input.getHeld(sm3.LEFT)) {
                 accelerate(dt, sm3.LEFT);
+                if (velocity.x < -maxVelocity.run * 0.95) {
+                    this.changeState(sm3.SmallMario.STATE.PREFLY);
+                }
             } else if ( sm3.input.getHeld(sm3.RIGHT)) {
                 accelerate(dt, sm3.RIGHT);
+                if (velocity.x > maxVelocity.run * 0.95) {
+                    this.changeState(sm3.SmallMario.STATE.PREFLY);
+                }
             } else {
                 decelerate(dt);
             }
@@ -120,6 +133,7 @@ sm3.SmallMario = function (initialPosition, level) {
                 that.changeState(sm3.SmallMario.STATE.CHANGEDIRECTION);
             }
             if (sm3.input.getPressed(sm3.JUMP)) {
+                that.changeState(sm3.SmallMario.STATE.JUMPING);
                 jump(dt);
             }
             checkFlip();
@@ -135,7 +149,7 @@ sm3.SmallMario = function (initialPosition, level) {
             }
             if ( sm3.input.getHeld(sm3.JUMP) &&
                  jumpTimer < maxHoldJumpTime) {
-             velocity.y -= holdJumpAcceleration * dt;
+                velocity.y -= holdJumpAcceleration * dt * 0.01;
             }
             jumpTimer += dt;
             checkFlip();
@@ -152,7 +166,26 @@ sm3.SmallMario = function (initialPosition, level) {
             }
             break;
         case sm3.SmallMario.STATE.PREFLY:
-
+            if (sm3.input.getHeld(sm3.LEFT)) {
+                accelerate(dt, sm3.LEFT);
+            } else if ( sm3.input.getHeld(sm3.RIGHT)) {
+                accelerate(dt, sm3.RIGHT);
+            } else {
+                decelerate(dt);
+            }
+            if (sm3.input.getPressed(sm3.LEFT) && velocity.x > 0) {
+                that.changeState(sm3.SmallMario.STATE.CHANGEDIRECTION);
+            } else if (sm3.input.getPressed(sm3.RIGHT) && velocity.x < 0) {
+                that.changeState(sm3.SmallMario.STATE.CHANGEDIRECTION);
+            }
+            if (sm3.input.getPressed(sm3.JUMP)) {
+                that.changeState(sm3.SmallMario.STATE.FLY);
+                jump(dt);
+            }
+            if (Math.abs(velocity.x) < maxVelocity.run * 0.90) {
+                this.changeState(sm3.SmallMario.STATE.RUNNING);
+            }
+            checkFlip();
             break;
         case sm3.SmallMario.STATE.SLIDE:
 
@@ -170,7 +203,20 @@ sm3.SmallMario = function (initialPosition, level) {
 
             break;
         case sm3.SmallMario.STATE.FLY:
-
+            if (sm3.input.getHeld(sm3.LEFT)) {
+                accelerate(dt, sm3.LEFT);
+            } else if ( sm3.input.getHeld(sm3.RIGHT)) {
+                accelerate(dt, sm3.RIGHT);
+            }
+            if (isStanding) {
+                this.changeState(sm3.SmallMario.STATE.RUNNING);
+            }
+            if ( sm3.input.getHeld(sm3.JUMP) &&
+                 jumpTimer < maxHoldJumpTime) {
+                velocity.y -= holdJumpAcceleration * dt * 0.01;
+            }
+            jumpTimer += dt;
+            checkFlip();
             break;
         case sm3.SmallMario.STATE.CARRYSHELL:
 
@@ -206,7 +252,7 @@ sm3.SmallMario = function (initialPosition, level) {
             this.changeAnim("ChangeDirection");
             break;
         case sm3.SmallMario.STATE.PREFLY:
-
+            this.changeAnim("PreFly");
             break;
         case sm3.SmallMario.STATE.SLIDE:
 
@@ -224,7 +270,7 @@ sm3.SmallMario = function (initialPosition, level) {
 
             break;
         case sm3.SmallMario.STATE.FLY:
-
+            this.changeAnim("Fly");
             break;
         case sm3.SmallMario.STATE.CARRYSHELL:
 
@@ -252,24 +298,24 @@ sm3.SmallMario = function (initialPosition, level) {
     this.resolveStaticCollision = function (collision, dt) {
         // all of the collisions with static geometry will be added together and treated as one collision
         switch(collision.type) {
-            case sm3.CollisionSystem.COLLISIONTILES.SOLID:
-                updateCollisionPhysics(collision.collisionVector, dt);
-                break;
-            case sm3.CollisionSystem.COLLISIONTILES.TOPONLY:
-                // top only tiles are ignored unless the angle is within 45 of vertical
-                var collisionAngle = sm3.utils.getAngle(collision.collisionVector);
-                if (collisionAngle < Math.PI * -0.25 &&
-                    collisionAngle > Math.PI * -0.75 &&
-                    collision.collisionVector.y > -15 &&
-                    velocity.y < 0) {
-                    if (collision.collisionVector.y > -15 ) {
-                        updateCollisionPhysics(collision.collisionVector, dt);
-                    }
+        case sm3.CollisionSystem.COLLISIONTILES.SOLID:
+            updateCollisionPhysics(collision.collisionVector, dt);
+            break;
+        case sm3.CollisionSystem.COLLISIONTILES.TOPONLY:
+            // top only tiles are ignored unless the angle is within 45 of vertical
+            var collisionAngle = sm3.utils.getAngle(collision.collisionVector);
+            if (collisionAngle < Math.PI * -0.25 &&
+                collisionAngle > Math.PI * -0.75 &&
+                collision.collisionVector.y > -15 &&
+                velocity.y < 0) {
+                if (collision.collisionVector.y > -15 ) {
+                    updateCollisionPhysics(collision.collisionVector, dt);
                 }
-                break;
-            default:
-                console.log("Error in smallMario.resolveStaticCollisions() Unknown tile type");
             }
+            break;
+        default:
+            console.log("Error in smallMario.resolveStaticCollisions() Unknown tile type");
+        }
         updateIsStanding(collision.collisionVector);
     };
 
@@ -292,7 +338,6 @@ sm3.SmallMario = function (initialPosition, level) {
              (collisionVector.y > 0 && velocity.y > 0) ) {
             return;
         }
-
         position.x += collisionVector.x;
         position.y += collisionVector.y;
         bb.updatePosition(position);
@@ -302,20 +347,23 @@ sm3.SmallMario = function (initialPosition, level) {
     };
 
     var accelerate = function (dt, direction) {
-        if (direction == sm3.LEFT) {
-            velocity.x -= acceleration * dt;
-        } else if (direction == sm3.RIGHT) {
-            velocity.x += acceleration * dt;
+        var realAcceleration;
+        if (currentState == sm3.SmallMario.STATE.CHANGEDIRECTION) {
+            realAcceleration = acceleration.walk;
+        } else if (isFast && Math.abs(velocity.x > maxVelocity.walk)) {
+            realAcceleration = acceleration.run;
+        } else {
+            realAcceleration = acceleration.walk;
         }
-        if (velocity.x > maxVelocity.x) {
-            velocity.x = maxVelocity.x;
-        } else if ( velocity.x < -1 * maxVelocity.x) {
-            velocity.x = -1 * maxVelocity.x;
+        if (direction == sm3.LEFT) {
+            velocity.x -= realAcceleration * dt;
+        } else if (direction == sm3.RIGHT) {
+            velocity.x += realAcceleration * dt;
         }
     };
 
     var decelerate = function (dt) {
-        velocity.x = sm3.utils.absSub(velocity.x, acceleration * dt);
+        velocity.x = sm3.utils.absSub(velocity.x, acceleration.walk * dt);
         if (Math.abs(velocity.x) < 0.35) {
             velocity.x = 0;
             that.changeState(sm3.SmallMario.STATE.STOPPED);
@@ -324,23 +372,32 @@ sm3.SmallMario = function (initialPosition, level) {
 
     var fall = function (dt) {
         if (isStanding) {
-            velocity.y = 0;
+            //velocity.y = 0;
         } else {
             velocity.y += gravity * dt;
-            velocity.y = Math.min(velocity.y, maxVelocity.y);
         }
     };
 
     var jump = function (dt) {
-        velocity.y -= initialJumpVelocity * dt;
+        velocity.y = -initialJumpVelocity;
         isStanding = false;
-        that.changeState(sm3.SmallMario.STATE.JUMPING);
     };
 
     var updatePosition = function (dt) {
-        //FIXME
-        position.x += velocity.x; // * dt;
-        position.y += velocity.y; // * dt;
+        var realMaxVel;
+        if (currentState == sm3.SmallMario.STATE.PREFLY ||
+            currentState == sm3.SmallMario.STATE.FLY) {
+            realMaxVel = maxVelocity.fly;
+        } else if (isFast) {
+            realMaxVel = maxVelocity.run;
+        } else {
+            realMaxVel = maxVelocity.walk;
+        }
+        velocity.x = Math.max(-realMaxVel, Math.min(velocity.x, realMaxVel));
+        velocity.y = Math.max(-maxVelocity.y, Math.min(velocity.y, maxVelocity.y));
+        position.x += velocity.x * dt * 0.001;
+        position.y += velocity.y * dt * 0.001;
+        console.log(velocity.y * dt * 0.001);
     };
 
     // check flip does nothing when velocity is 0.  if you come to a stop
