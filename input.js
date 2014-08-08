@@ -21,6 +21,7 @@
             var keyPress = {};
             var keyHeld = {};
             var bindings = {};
+            var pressable = {};
 
             this.getPressed = function (action) {
                 if (keyPress[action]) {
@@ -37,13 +38,17 @@
             };
             this.bindKey = function (key, action) {
                 bindings[key] = action;
+                pressable[action] = true;
             };
             var keyDown = function (event) {
                 var action = bindings[event.keyCode];
                 // if (action) verifies the action exists and === 0 is just an edgecase where it is 0
                 if (action || action === 0) {
-                    keyPress[action] = true;
-                    keyHeld[action] = true;
+                    if (pressable[action]) {
+                        keyPress[action] = true;
+                        keyHeld[action] = true;
+                        pressable[action] = false;
+                    }
                 }
                 event.stopPropagation();
                 event.preventDefault();
@@ -53,6 +58,7 @@
                 if (action || action === 0) {
                     keyPress[action] = false;
                     keyHeld[action] = false;
+                    pressable[action] = true;
                 }
                 event.stopPropagation();
                 event.preventDefault();
