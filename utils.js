@@ -12,6 +12,10 @@
                 return {x:vector.x * scalar, y:vector.y * scalar};
             };
 
+            this.vectorSub = function (vecA, vecB) {
+                return {x:vecA.x - vecB.x, y:vecA.y - vecB.y};
+            };
+
             this.magnitude = function (vector) {
                 return Math.sqrt(vector.x * vector.x + vector.y * vector.y);
             };

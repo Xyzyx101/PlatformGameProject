@@ -1,10 +1,15 @@
 /*  This is the mario representation in a regular level.
  @param position - an object in the form {x:pixels, y:pixels}. */
-sm3.SmallMario = function (initialPosition, level) {
+sm3.SmallMario = function (initialPosition, level, powerLevel) {
     "use strict";
     var that = this;
+
+    var marioPowerLevel = powerLevel || sm3.SmallMario.POWERLEVEL.SMALL;
+    this.getPowerLevel = function () {
+        return marioPowerLevel;
+    };
+
     var frameSize = {width:64,height:64};
- 
     this.getFrameSize = function () {
         return frameSize;
     };
@@ -296,7 +301,13 @@ sm3.SmallMario = function (initialPosition, level) {
     };
     this.interactsWithStaticGeometry = function () {return true;};
     this.getInteractsWithList = function () {
-        return [sm3.GameLevel.ENTITYTYPE.COIN];
+        return [sm3.GameLevel.ENTITYTYPE.COIN,
+                sm3.GameLevel.ENTITYTYPE.COINBLOCK,
+                sm3.GameLevel.ENTITYTYPE.LEAFBLOCK,
+                sm3.GameLevel.ENTITYTYPE.GOOMBA,
+                sm3.GameLevel.ENTITYTYPE.KOOPA,
+                sm3.GameLevel.ENTITYTYPE.FLYINGGOOMBA,
+                sm3.GameLevel.ENTITYTYPE.FLYINGKOOPA];
     };
 
     this.resolveStaticCollision = function (collision, dt) {
@@ -315,13 +326,19 @@ sm3.SmallMario = function (initialPosition, level) {
         updateIsStanding(collision.collisionVector);
     };
 
-    this.resolveActiveCollision = function (collision, dt) {
+    // @param collider - collision object with collision vector and type
+    // @param object - th object that you are collising with
+    // @param dt - the tick dt in milliseconds
+    this.resolveActiveCollision = function (collision, object, dt) {
         switch(collision.type) {
         case sm3.GameLevel.ENTITYTYPE.COIN:
-            console.log("hit a coin!")
+            object.hit();
             break;
         case sm3.GameLevel.ENTITYTYPE.COINBLOCK:
-
+            var angle = sm3.utils.getAngle(collision.collisionVector);
+            if (angle > -0.75 * Math.PI && angle < -0.25 * Math.PI) {
+                object.hit();
+            }
             break;
         case sm3.GameLevel.ENTITYTYPE.LEAFBLOCK:
 
@@ -442,6 +459,10 @@ sm3.SmallMario = function (initialPosition, level) {
     };
 };
 
+sm3.SmallMario.POWERLEVEL = {
+    SMALL:0,
+    BIG:1,
+    RACOON:2};
 sm3.SmallMario.STATE = {
     STOPPED:0,
     RUNNING:1,

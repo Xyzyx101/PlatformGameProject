@@ -23,6 +23,9 @@
 
         var currentFrame = 0;
         var frameDelay = newFrameDelay; // frame delay in milliseconds. 0 will not animate
+        this.setFrameDelay = function (newFrameDelay) {
+            frameDelay = newFrameDelay;
+        };
         var animations = []; // should contain anim objects
         var frameSize = newFrameSize;
         var animFrameChangeCount = 0;

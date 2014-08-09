@@ -25,6 +25,9 @@
         var entities = [];
         // note that this register entity is local to the level not the global list in game.js
         var mario = registerEntity(new sm3.SmallMario({x:256,y:1600}));
+        this.getMario = function () {
+            return mario;
+        };
         var entityData = this.getDataLayer("entities", "entities");
         spawnEntityLayer(entityData);
 
@@ -96,8 +99,10 @@
                         registerEntity(new sm3.Coin(spawnPosition, that));
                         break;
                     case sm3.GameLevel.ENTITYTYPE.COINBLOCK:
+                        registerEntity(new sm3.CoinBlock(spawnPosition, that, sm3.CoinBlock.TYPE.COIN));
                         break;
                     case sm3.GameLevel.ENTITYTYPE.LEAFBLOCK:
+                        registerEntity(new sm3.CoinBlock(spawnPosition, that, sm3.CoinBlock.TYPE.LEAF));
                         break;
                     case sm3.GameLevel.ENTITYTYPE.GOOMBA:
                         break;

@@ -34,7 +34,7 @@ sm3.CollisionSystem = function () {
             if (element.interactsWithStaticGeometry()) {
                 checkStaticCollision(element, dt);
             }
-         });
+        });
     };
 
     var checkStaticCollision = function (firstElement, dt) {
@@ -69,7 +69,7 @@ sm3.CollisionSystem = function () {
                     } else {
                         collisionVector = {x: xOverlap, y: 0};
                     }
-                 }
+                }
                 var collision = new sm3.Collision(secondElement.type, collisionVector);
                 firstElement.resolveStaticCollision(collision, dt);
             }
@@ -98,25 +98,13 @@ sm3.CollisionSystem = function () {
             if (overlap(axisProjX, targetAxisProjX) &&
                 overlap(axisProjY, targetAxisProjY)) {
 
-                var xOverlap = bb.halfWidth + targetBB.halfWidth - Math.abs(bb.center.x - targetBB.center.x);
-                var yOverlap = bb.halfHeight + targetBB.halfHeight - Math.abs(bb.center.y - targetBB.center.y);
-                var collisionVector = {};
+                //DELETEME
+                //var xOverlap = bb.halfWidth + targetBB.halfWidth - Math.abs(bb.center.x - targetBB.center.x);
+                //var yOverlap = bb.halfHeight + targetBB.halfHeight - Math.abs(bb.center.y - targetBB.center.y);
 
-                if (Math.abs(xOverlap) > Math.abs(yOverlap)) {
-                    if (bb.center.y < targetBB.center.y) {
-                        collisionVector = {x: 0, y: -yOverlap};
-                    } else {
-                        collisionVector = {x: 0, y: yOverlap};
-                    }
-                } else {
-                    if(bb.center.x < targetBB.center.x) {
-                        collisionVector = {x: -xOverlap, y: 0};
-                    } else {
-                        collisionVector = {x: xOverlap, y: 0};
-                    }
-                 }
+                var collisionVector = sm3.utils.vectorSub(targetBB.center, bb.center);
                 var collision = new sm3.Collision(type, collisionVector);
-                firstElement.resolveActiveCollision(collision, dt);
+                firstElement.resolveActiveCollision(collision, secondElement, dt);
             }
         });
     };

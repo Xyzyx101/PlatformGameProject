@@ -34,13 +34,15 @@ sm3.Coin = function (initialPosition, level) {
     this.changeAnim("Stopped");
 
     var touched = false;
-    this.marioTouched = function () {
+    this.hit = function () {
         touched = true;
     };
 
     this.update = function (dt) {
         if(touched) {
-            // when the HUD works increase coin count here
+
+            // TODO - when the HUD works increase coin count here
+
             level.destroy(this);
         }
     };
