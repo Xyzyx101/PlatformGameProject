@@ -40,6 +40,7 @@
             console.log("Render should be overwritten in the child class");
         };
         this.animate = function (dt) {
+            if (frameDelay == 0) {return;}
             animFrameChangeCount += dt;
             while (animFrameChangeCount > frameDelay) {
                 animFrameChangeCount -= frameDelay;
@@ -53,6 +54,7 @@
             currentFrame = 0;
             animFrameChangeCount = 0;
             var index = 0;
+
             var found = false;
             do {
                 if (animations[index].name == newAnim) {

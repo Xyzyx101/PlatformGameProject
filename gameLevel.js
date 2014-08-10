@@ -59,7 +59,6 @@
         };
 
         this.getLevelSize = function () {
-
             return {width: mapWidth * tileWidth, height: mapHeight * tileHeight};
         };
 
@@ -153,6 +152,8 @@
         KOOPA:5,
         FLYINGGOOMBA:6,
         FLYINGKOOPA:7,
+        SUPERMUSHROOM:8,
+        UPMUSHROOM:9,
         MARIO:9999
     };
 })();

@@ -37,6 +37,17 @@ sm3.CoinBlock = function (initialPosition, level, type) {
                                {x:frameSize.width * 10, y:0}],
                               [0,1,2,3,4])
                 );
+    this.addAnim(new sm3.Anim("SpawnMushroom",
+                              [{x:frameSize.width, y:frameSize.height * 2},
+                               {x:frameSize.width * 2, y:frameSize.height * 2},
+                               {x:frameSize.width * 3, y:frameSize.height * 2},
+                               {x:frameSize.width * 4, y:frameSize.height * 2}],
+                              [0,1,2,3])
+                );
+    this.addAnim(new sm3.Anim("SpawnLeaf",
+                              [{x:frameSize.width * 7, y:frameSize.height}],
+                              [0])
+                );
 
     this.hit = function () {
         if (type == sm3.CoinBlock.TYPE.COIN) {
@@ -51,6 +62,7 @@ sm3.CoinBlock = function (initialPosition, level, type) {
     };
 
     // the target is the place a spawned object should animate to
+    var startPosition = {x:0, y:0};
     var targetPosition = {x:0, y:0};
     var targetTime = 0;
     var currentState = 0;
@@ -67,10 +79,23 @@ sm3.CoinBlock = function (initialPosition, level, type) {
             }
             break;
         case sm3.CoinBlock.STATE.SPAWNMUSHROOM:
-            interpolatePosition(spawnTimer, targetTime);
+            spawnTimer += dt;
+            if (spawnTimer > targetTime) {
+                level.registerEntity(new sm3.Mushroom(position,
+                                                      level,
+                                                      sm3.Mushroom.TYPE.SUPERMUSHROOM,
+                                                      false));
+                level.destroy(this);
+            }
             break;
         case sm3.CoinBlock.STATE.SPAWNLEAF:
-            interpolatePosition(spawnTimer, targetTime);
+            spawnTimer += dt;
+            position = interpolatePosition(spawnTimer, targetTime);
+            if (spawnTimer > targetTime) {
+                console.log("TODO spawnLeaf");
+                //level.registerEntity(new sm3.Leaf());
+                level.destroy(this);
+            }
             break;
         default:
             console.log("Error in coinBlock - unknown state");
@@ -93,15 +118,23 @@ sm3.CoinBlock = function (initialPosition, level, type) {
             // TODO add a coin to the HUD
 
             that.changeAnim("SpawnCoin");
-            targetPosition = {x:position.x, y:position.y + frameSize.height * 5};
+            startPosition = {x:position.x, y:position.y - frameSize.height};
+            targetPosition = {x:position.x, y:position.y - frameSize.height * 4};
             targetTime = 600;
             that.setFrameDelay(100);
             break;
         case sm3.CoinBlock.STATE.SPAWNMUSHROOM:
+            targetTime = 2000;
+            that.setFrameDelay(targetTime * 0.25);
+            position = {x:initialPosition.x, y:initialPosition.y - frameSize.height};
             that.changeAnim("SpawnMushroom");
             break;
         case sm3.CoinBlock.STATE.SPAWNLEAF:
             that.changeAnim("SpawnLeaf");
+            startPosition = {x:position.x, y:position.y - frameSize.height};
+            targetPosition = {x:position.x, y:position.y - frameSize.height * 2};
+            targetTime = 300;
+            that.setFrameDelay(0);
             break;
         default:
             console.log("Error in coinBlock - unknown state");
@@ -111,9 +144,9 @@ sm3.CoinBlock = function (initialPosition, level, type) {
 
     var interpolatePosition = function (time, targetTime) {
         var interpCoeff = time / targetTime;
-        var partialPosition = sm3.utils.vectorSub(initialPosition, targetPosition);
+        var partialPosition = sm3.utils.vectorSub(targetPosition, startPosition);
         partialPosition = sm3.utils.vectorMul(partialPosition, interpCoeff);
-        return sm3.utils.vectorAdd(initialPosition, partialPosition);
+        return sm3.utils.vectorAdd(startPosition, partialPosition);
     };
 };
 sm3.CoinBlock.TYPE = {COIN : 0,

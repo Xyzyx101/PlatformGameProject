@@ -19,19 +19,22 @@
                                                               this
                                                              );
         var staticCollisionData = this.getDataLayer("collision", "collision");
+        this.getTileType = function (row, col) {
+            return staticCollisionData[row][col];
+        };
         var staticBBoxes = this.buildStaticBBArray(staticCollisionData);
         var collision = new sm3.CollisionSystem();
 
         var entities = [];
         // note that this register entity is local to the level not the global list in game.js
+
+        var entityData = this.getDataLayer("entities", "entities");
+
+        var groundLimit = 1728; //this is the bottom limit the camera will show
         var mario = registerEntity(new sm3.SmallMario({x:256,y:1600}));
         this.getMario = function () {
             return mario;
         };
-        var entityData = this.getDataLayer("entities", "entities");
-        spawnEntityLayer(entityData);
-
-        var groundLimit = 1728; //this is the bottom limit the camera will show
         var camera = new sm3.Camera(mario, levelSize, groundLimit);
 
         this.update = function (dt) {
@@ -48,8 +51,16 @@
                     collision.addActiveCollider(entity);
                 }
             });
+
+            // a list of collidable tiles is created that includes every tile
+            // fully on the screen plus one row and column around the screen
             var topLeftTile = this.getTileAtPos({x:screenBounds.minX, y:screenBounds.minY});
             var botRightTile = this.getTileAtPos({x:screenBounds.maxX, y:screenBounds.maxY});
+            var mapSize = this.getMapSize();
+            topLeftTile.x = Math.max(topLeftTile.x - 1, 0);
+            topLeftTile.y = Math.max(topLeftTile.y - 1, 0);
+            botRightTile.x = Math.min(botRightTile.x + 1, mapSize.width);
+            botRightTile.y = Math.min(botRightTile.y + 1, mapSize.height);
             var row = topLeftTile.y;
             while (row < botRightTile.y) {
                 var col = topLeftTile.x;
@@ -85,11 +96,17 @@
             var index = entities.indexOf(entity);
             entities.splice(index, 1);
         };
+        this.registerEntity = function (entity) {
+            // this function is not an error.  I need the private version so
+            // I can register mario without circular dependancy issues between
+            // the level, camera and mario and I also need the public property version
+            registerEntity(entity);
+        };
         function registerEntity (entity) {
             entities.push(entity);
             return entity;
-        }
-        function spawnEntityLayer (data) {
+        };
+        var spawnEntityLayer = function (data) {
             var tileSize = that.getTileSize();
             for (var row = 0; row < data.length; row++) {
                 for (var col = 0; col < data[0].length; col++) {
@@ -110,6 +127,7 @@
                     }
                 }
             }
-        }
+        };
+        spawnEntityLayer(entityData);
     };
 })();

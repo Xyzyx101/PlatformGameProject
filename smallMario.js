@@ -307,7 +307,9 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
                 sm3.GameLevel.ENTITYTYPE.GOOMBA,
                 sm3.GameLevel.ENTITYTYPE.KOOPA,
                 sm3.GameLevel.ENTITYTYPE.FLYINGGOOMBA,
-                sm3.GameLevel.ENTITYTYPE.FLYINGKOOPA];
+                sm3.GameLevel.ENTITYTYPE.FLYINGKOOPA,
+                sm3.GameLevel.ENTITYTYPE.SUPERMUSHROOM,
+                sm3.GameLevel.ENTITYTYPE.UPMUSHROOM];
     };
 
     this.resolveStaticCollision = function (collision, dt) {
@@ -355,6 +357,14 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
         case sm3.GameLevel.ENTITYTYPE.FLYINGKOOPA:
 
             break;
+        case sm3.GameLevel.ENTITYTYPE.SUPERMUSHROOM:
+            console.log("TODO -- get big");
+            object.hit();
+            break;
+        case sm3.GameLevel.ENTITYTYPE.UPMUSHROOM:
+            console.log("TODO -- 1UP");
+            object.hit();
+            break;
         default:
             console.log("Error in smallMario resolve active collision - unkown entity");
         };
@@ -391,12 +401,12 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
         var realAcceleration;
         if (currentState != sm3.SmallMario.STATE.CHANGEDIRECTION &&
             Math.abs(velocity.x) > maxVelocity.run ) {
-            realAcceleration = acceleration.fly;
-        } else if (isFast) {
-            realAcceleration = acceleration.run;
-        } else {
-            realAcceleration = acceleration.walk;
-        }
+                realAcceleration = acceleration.fly;
+            } else if (isFast) {
+                realAcceleration = acceleration.run;
+            } else {
+                realAcceleration = acceleration.walk;
+            }
 
         if (direction == sm3.LEFT) {
             velocity.x -= realAcceleration * dt;
@@ -415,12 +425,6 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
 
     var fall = function (dt) {
         velocity.y += gravity * dt;
-        /*
-        if (isStanding) {
-            velocity.y = 0;
-        } else {
-            velocity.y += gravity * dt;
-        }*/
     };
 
     var jump = function (dt) {
