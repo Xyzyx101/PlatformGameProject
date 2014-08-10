@@ -71,6 +71,7 @@ sm3.Spinner = function (wheel) {
         case sm3.Spinner.STATE.SPINNING:
             rotateSpinner(dt);
             if ( sm3.input.getPressed(sm3.JUMP) || sm3.input.getPressed(sm3.JUMP) ) {
+                sm3.soundManager.play("smb3_nspade_match");
                 selectedTile = getCurrentTile();
                 this.changeState(sm3.Spinner.STATE.SLOWING);
             }

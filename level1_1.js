@@ -7,6 +7,20 @@
         sm3.GameLevel.call(this, sm3.Level1_1.data);
         sm3.game.registerEntity(this);
         sm3.game.setBackgroundLayer(new sm3.BackgroundLayer(null,{r:156, g:252, b:240} ));
+        sm3.soundManager.loadAudio("smb3_1-up" ,1);
+        sm3.soundManager.loadAudio("smb3_bump" ,1);
+        sm3.soundManager.loadAudio("smb3_coin" ,1);
+        sm3.soundManager.loadAudio("smb3_fireball" ,1);
+        sm3.soundManager.loadAudio("smb3_jump" ,1);
+        sm3.soundManager.loadAudio("smb3_kick" ,1);
+        sm3.soundManager.loadAudio("smb3_level_clear" ,1);
+        sm3.soundManager.loadAudio("smb3_mushroom_appears" ,1);
+        sm3.soundManager.loadAudio("smb3_player_down" ,1);
+        sm3.soundManager.loadAudio("smb3_pmeter" ,1);
+        sm3.soundManager.loadAudio("smb3_power-up" ,1);
+        sm3.soundManager.loadAudio("smb3_raccoon_transform" ,1);
+        sm3.soundManager.loadAudio("smb3_stomp" ,1);
+        sm3.soundManager.loadAudio("smb3_tail" ,1);
 
         var levelSize = this.getLevelSize();
         var levelGeometry = this.getDataLayer("geometry", "levelTiles");

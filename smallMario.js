@@ -253,6 +253,7 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
             this.changeAnim("Run");
             break;
         case sm3.SmallMario.STATE.JUMPING:
+            sm3.soundManager.play("smb3_jump");
             jumpTimer = 0;
             this.changeAnim("Jump");
             break;
@@ -272,7 +273,7 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
 
             break;
         case sm3.SmallMario.STATE.DIE:
-
+            sm3.soundManager.play("smb3_player_down");
             break;
         case sm3.SmallMario.STATE.SWIM:
 
@@ -334,11 +335,13 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
     this.resolveActiveCollision = function (collision, object, dt) {
         switch(collision.type) {
         case sm3.GameLevel.ENTITYTYPE.COIN:
+            sm3.soundManager.play("smb3_coin");
             object.hit();
             break;
         case sm3.GameLevel.ENTITYTYPE.COINBLOCK:
             var angle = sm3.utils.getAngle(collision.collisionVector);
             if (angle > -0.75 * Math.PI && angle < -0.25 * Math.PI) {
+                sm3.soundManager.play("smb3_bump");
                 object.hit();
             }
             break;
@@ -359,9 +362,11 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
             break;
         case sm3.GameLevel.ENTITYTYPE.SUPERMUSHROOM:
             console.log("TODO -- get big");
+            sm3.soundManager.play("smb3_power-up");
             object.hit();
             break;
         case sm3.GameLevel.ENTITYTYPE.UPMUSHROOM:
+            sm3.soundManager.play("smb3_1-up");
             console.log("TODO -- 1UP");
             object.hit();
             break;

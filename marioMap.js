@@ -6,6 +6,7 @@ sm3.MarioMap = function (position, characterState, initialMapPosition) {
     var mapPosition = initialMapPosition;
     var frameSize = {width:70,height:64};
     sm3.Entity.call(this, "./images/mapTiles.png", 350, frameSize);
+    sm3.soundManager.loadAudio("smb3_map_travel", 0.6);
     this.addAnim(new sm3.Anim("Small",
                 [{x:0, y:frameSize.height * 4},
                 {x:0, y:frameSize.height * 5}],
@@ -33,6 +34,7 @@ sm3.MarioMap = function (position, characterState, initialMapPosition) {
     this.update = function (dt) {
         switch(currentState) {
         case MOVING:
+            sm3.soundManager.play("smb3_map_travel");
             var xDirection = newPixelPosition.x - position.x;
             var yDirection = newPixelPosition.y - position.y;
             if (xDirection < 0) {

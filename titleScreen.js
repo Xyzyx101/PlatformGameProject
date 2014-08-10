@@ -4,6 +4,8 @@
         sm3.game.setBackgroundLayer(new sm3.BackgroundLayer("./images/titleScreenBackground.png"));
         sm3.game.registerEntity(new StartMenu());
         sm3.game.registerEntity(new FlashingTitle());
+        sm3.soundManager.loadAudio("smb3_text", 0.6);
+        sm3.soundManager.loadAudio("smb3_map_new_world", 1);
     };
 
     function StartMenu () {
@@ -20,18 +22,22 @@
                 if (sm3.input.getPressed(sm3.DOWN) || sm3.input.getPressed(sm3.SELECT)) {
                     this.changeAnim("Match");
                     currentState = MATCH;
+                    sm3.soundManager.play("smb3_text");
                 }
                 if (sm3.input.getPressed(sm3.JUMP) || sm3.input.getPressed(sm3.START)) {
                     sm3.game.loadLevel(sm3.game.WORLD01MAP);
+                    sm3.soundManager.play("smb3_map_new_world");
                 }
                 break;
             case MATCH:
                 if (sm3.input.getPressed(sm3.UP) || sm3.input.getPressed(sm3.SELECT)) {
                     this.changeAnim("Start");
                     currentState = START;
+                    sm3.soundManager.play("smb3_text");
                 }
                 if (sm3.input.getPressed(sm3.JUMP) || sm3.input.getPressed(sm3.START)) {
                     sm3.game.loadLevel(sm3.game.SPINMINIGAME);
+                    sm3.soundManager.play("smb3_map_new_world");
                 }
                 break;
             }

@@ -11,4 +11,8 @@ sm3.SpinMiniGame = function (returnToLevel) {
     var extraLife = sm3.game.registerEntity(new sm3.MiniGameExtraLife());
 
     var controller = sm3.game.registerEntity(new sm3.SpinController(spinners, extraLife));
+    sm3.soundManager.loadAudio("smb3_1-up", 1);
+    sm3.soundManager.loadAudio("smb3_nspade_match", 0.8);
+    sm3.soundManager.loadAudio("smb3_bonus_game_no_match", 1);
+    sm3.soundManager.loadAudio("smb3_enter_level", 1);
 };

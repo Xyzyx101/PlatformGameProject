@@ -50,12 +50,16 @@ sm3.CoinBlock = function (initialPosition, level, type) {
                 );
 
     this.hit = function () {
+        if (currentState != sm3.CoinBlock.STATE.QUESTION) {return;}
         if (type == sm3.CoinBlock.TYPE.COIN) {
+            sm3.soundManager.play("smb3_coin");
             changeState(sm3.CoinBlock.STATE.SPAWNCOIN);
         } else if (type == sm3.CoinBlock.TYPE.LEAF) {
             if (level.getMario().getPowerLevel() == sm3.SmallMario.POWERLEVEL.SMALL) {
+                sm3.soundManager.play("smb3_mushroom_appears");
                 changeState(sm3.CoinBlock.STATE.SPAWNMUSHROOM);
             } else {
+                sm3.soundManager.play("smb3_mushroom_appears");
                 changeState(sm3.CoinBlock.STATE.SPAWNLEAF);
             }
         }

@@ -47,9 +47,9 @@
             this.addAnim(new sm3.Anim("CompleteNormal",[{x:frameSize.width * tileMapColumn, y:frameSize.height}],[0]));
             this.addAnim(new sm3.Anim("CompleteFlipped",[{x:frameSize.width * tileMapColumn, y:frameSize.height}],[0]));
         }
-            
+
         var openSides = newOpenSides;
-        
+
         // All of the level tiles flip between normal and flipped when you look at you inventory
         this.changeState = function (newState) {
             currentState = newState;
@@ -70,14 +70,14 @@
                 console.log("Error! Unknown state in MapLevel entity");
             }
         };
-        
+
         var currentState = sm3.MapLevel.STATE.NORMAL;
         this.changeState(currentState);
-        
+
         this.getState = function () {
             return currentState;
         };
-        
+
         this.update = function (dt) {};
         this.render = function () {
             this.displayAnim(position.x, position.y);

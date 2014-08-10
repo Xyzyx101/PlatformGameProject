@@ -60,6 +60,9 @@
                 sm3.imageManager.storeImage(path, newResource.getImage());
                 resources.push(newResource);
             };
+            this.addSoundResource = function (newResource) {
+                resources.push(newResource);
+            };
             this.setBackgroundLayer = function (layer) {
                 backgroundLayer = layer;
                 levelSize.width = layer.width;
