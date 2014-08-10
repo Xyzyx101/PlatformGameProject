@@ -136,11 +136,16 @@
             return mapData;
         };
         var stripGID = function (firstGID, layerData) {
+            // a copy of the array is required or it will break when you restart the level
+            var newLayerData = [];
             for (var i = 0; i < layerData.length; i++) {
-                if (layerData[i] === 0) continue;
-                layerData[i] = layerData[i] - firstGID + 1; // +1 because 0 == no tile
+                if (layerData[i] === 0) {
+                    newLayerData[i] = 0;
+                } else {
+                    newLayerData[i] = layerData[i] - firstGID + 1; // +1 because 0 == no tile
+                }
             }
-            return layerData;
+            return newLayerData;
         };
     };
     // These types need to match up to the entity tiles layer from the tiled map
@@ -148,12 +153,19 @@
         COIN:1,
         COINBLOCK:2,
         LEAFBLOCK:3,
-        GOOMBA:4,
-        KOOPA:5,
-        FLYINGGOOMBA:6,
-        FLYINGKOOPA:7,
-        SUPERMUSHROOM:8,
-        UPMUSHROOM:9,
+        UPMUSHROOM:4,
+        BRICK:5,
+        PBRICK:6,
+        ENDLEVEL:7,
+        ___:8,
+        KOOPA:9,
+        FLYINGKOOPA:10,
+        REDKOOPA:11,
+        REDFLYINGKOOPA:12,
+        GOOMBA:13,
+        FLYINGGOOMBA:14,
+        DARKGOOMBA:15,
+        DARKFLYINGGOOMBA:16,
         MARIO:9999
     };
 })();

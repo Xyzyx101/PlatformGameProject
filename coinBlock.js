@@ -128,7 +128,7 @@ sm3.CoinBlock = function (initialPosition, level, type) {
             that.setFrameDelay(100);
             break;
         case sm3.CoinBlock.STATE.SPAWNMUSHROOM:
-            targetTime = 2000;
+            targetTime = 1200;
             that.setFrameDelay(targetTime * 0.25);
             position = {x:initialPosition.x, y:initialPosition.y - frameSize.height};
             that.changeAnim("SpawnMushroom");

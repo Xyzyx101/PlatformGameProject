@@ -8,10 +8,10 @@
         sm3.game.registerEntity(this);
         sm3.game.setBackgroundLayer(new sm3.BackgroundLayer(null,{r:156, g:252, b:240} ));
         sm3.soundManager.loadAudio("smb3_1-up" ,1);
-        sm3.soundManager.loadAudio("smb3_bump" ,1);
-        sm3.soundManager.loadAudio("smb3_coin" ,1);
+        sm3.soundManager.loadAudio("smb3_bump" ,0.8);
+        sm3.soundManager.loadAudio("smb3_coin" ,0.9);
         sm3.soundManager.loadAudio("smb3_fireball" ,1);
-        sm3.soundManager.loadAudio("smb3_jump" ,1);
+        sm3.soundManager.loadAudio("smb3_jump" ,0.7);
         sm3.soundManager.loadAudio("smb3_kick" ,1);
         sm3.soundManager.loadAudio("smb3_level_clear" ,1);
         sm3.soundManager.loadAudio("smb3_mushroom_appears" ,1);
@@ -21,6 +21,7 @@
         sm3.soundManager.loadAudio("smb3_raccoon_transform" ,1);
         sm3.soundManager.loadAudio("smb3_stomp" ,1);
         sm3.soundManager.loadAudio("smb3_tail" ,1);
+        sm3.soundManager.loadAudio("smb3_pmeter" ,1);
 
         var levelSize = this.getLevelSize();
         var levelGeometry = this.getDataLayer("geometry", "levelTiles");
@@ -56,11 +57,13 @@
             var screenBounds = camera.getScreenBounds();
             collision.clearColliderLists();
             entities.forEach(function (entity) {
+                //mario will always tick, everything else only when it is on screen
                 var entityPos = entity.getPosition();
-                if (entityPos.x > screenBounds.minX &&
-                    entityPos.x < screenBounds.maxX &&
-                    entityPos.y > screenBounds.minY &&
-                    entityPos.y < screenBounds.maxY) {
+                if ( entity.getType() == sm3.GameLevel.ENTITYTYPE.MARIO ||
+                     (entityPos.x > screenBounds.minX &&
+                      entityPos.x < screenBounds.maxX &&
+                      entityPos.y > screenBounds.minY &&
+                      entityPos.y < screenBounds.maxY) ) {
                     entity.update(dt);
                     collision.addActiveCollider(entity);
                 }
@@ -136,6 +139,10 @@
                         registerEntity(new sm3.CoinBlock(spawnPosition, that, sm3.CoinBlock.TYPE.LEAF));
                         break;
                     case sm3.GameLevel.ENTITYTYPE.GOOMBA:
+                        registerEntity(new sm3.Goomba(spawnPosition, that, sm3.Goomba.TYPE.GOOMBA));
+                        break;
+                    case sm3.GameLevel.ENTITYTYPE.DARKGOOMBA:
+                        registerEntity(new sm3.Goomba(spawnPosition, that, sm3.Goomba.TYPE.DARKGOOMBA));
                         break;
                     default:
                     }

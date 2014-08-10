@@ -42,6 +42,8 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
     var holdFlyAcceleration = 260;
     var jumpTimer = 0;
     var maxHoldJumpTime = 400;
+    var currentTimer = null;
+    var timerTarget = null;
 
     sm3.Entity.call(this, "./images/smallMario.png", 100, frameSize);
     this.addAnim(new sm3.Anim("Stopped",
@@ -193,6 +195,7 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
             if (Math.abs(velocity.x) < maxVelocity.fly * 0.9) {
                 this.changeState(sm3.SmallMario.STATE.RUNNING);
             }
+            sm3.soundManager.play("smb3_pmeter");
             checkFlip();
             break;
         case sm3.SmallMario.STATE.SLIDE:
@@ -205,7 +208,10 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
 
             break;
         case sm3.SmallMario.STATE.DIE:
-
+            currentTimer += dt;
+            if (currentTimer > timerTarget) {
+                sm3.game.loadLevel(sm3.game.WORLD01MAP);
+            }
             break;
         case sm3.SmallMario.STATE.SWIM:
 
@@ -225,6 +231,7 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
             }
             jumpTimer += dt;
             checkFlip();
+            sm3.soundManager.play("smb3_pmeter");
             break;
         case sm3.SmallMario.STATE.CARRYSHELL:
 
@@ -273,7 +280,13 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
 
             break;
         case sm3.SmallMario.STATE.DIE:
+            this.changeAnim("Die");
             sm3.soundManager.play("smb3_player_down");
+            currentTimer = 0;
+            timerTarget = 4000;
+            velocity.x = 0;
+            velocity.y = -initialJumpVelocity * 2;
+            canInteractWithStaticGeometry = false;
             break;
         case sm3.SmallMario.STATE.SWIM:
 
@@ -300,7 +313,10 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
             this.displayAnim(position.x - cameraOffset.x, position.y - cameraOffset.y);
         }
     };
-    this.interactsWithStaticGeometry = function () {return true;};
+    var canInteractWithStaticGeometry = true;
+    this.interactsWithStaticGeometry = function () {
+        return canInteractWithStaticGeometry;
+    };
     this.getInteractsWithList = function () {
         return [sm3.GameLevel.ENTITYTYPE.COIN,
                 sm3.GameLevel.ENTITYTYPE.COINBLOCK,
@@ -323,6 +339,9 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
                 updateCollisionPhysics(collision.collisionVector, dt);
             }
             break;
+        case sm3.CollisionSystem.COLLISIONTILES.DEATH:
+            this.changeState(sm3.SmallMario.STATE.DIE);
+            break;
         default:
             console.log("Error in smallMario.resolveStaticCollisions() Unknown tile type");
         }
@@ -332,14 +351,18 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
     // @param collider - collision object with collision vector and type
     // @param object - th object that you are collising with
     // @param dt - the tick dt in milliseconds
+    var angle;
     this.resolveActiveCollision = function (collision, object, dt) {
+        if (currentState == sm3.SmallMario.STATE.DIE) {
+            return;
+        }
         switch(collision.type) {
         case sm3.GameLevel.ENTITYTYPE.COIN:
             sm3.soundManager.play("smb3_coin");
             object.hit();
             break;
         case sm3.GameLevel.ENTITYTYPE.COINBLOCK:
-            var angle = sm3.utils.getAngle(collision.collisionVector);
+            angle = sm3.utils.getAngle(collision.collisionVector);
             if (angle > -0.75 * Math.PI && angle < -0.25 * Math.PI) {
                 sm3.soundManager.play("smb3_bump");
                 object.hit();
@@ -349,7 +372,32 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
 
             break;
         case sm3.GameLevel.ENTITYTYPE.GOOMBA:
-
+            if (object.getState() != sm3.Goomba.STATE.WALK) {
+                return;
+            }
+            angle = sm3.utils.getAngle(collision.collisionVector);
+            if (angle > 0.25 * Math.PI && angle < 0.75 * Math.PI) {
+                sm3.soundManager.play("smb3_stomp");
+                object.stomp();
+                jump(dt);
+                this.changeState(sm3.SmallMario.STATE.JUMPING);
+            } else {
+                this.changeState(sm3.SmallMario.STATE.DIE);
+            }
+            break;
+        case sm3.GameLevel.ENTITYTYPE.DARKGOOMBA:
+            if (object.getState() != sm3.Goomba.STATE.WALK) {
+                return;
+            }
+            angle = sm3.utils.getAngle(collision.collisionVector);
+            if (angle > 0.25 * Math.PI && angle < 0.75 * Math.PI) {
+                sm3.soundManager.play("smb3_stomp");
+                object.stomp();
+                jump(dt);
+                this.changeState(sm3.SmallMario.STATE.JUMPING);
+            } else {
+                this.changeState(sm3.SmallMario.STATE.DIE);
+            }
             break;
         case sm3.GameLevel.ENTITYTYPE.KOOPA:
 
