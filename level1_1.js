@@ -74,10 +74,10 @@
             var topLeftTile = this.getTileAtPos({x:screenBounds.minX, y:screenBounds.minY});
             var botRightTile = this.getTileAtPos({x:screenBounds.maxX, y:screenBounds.maxY});
             var mapSize = this.getMapSize();
-            topLeftTile.x = Math.max(topLeftTile.x - 1, 0);
-            topLeftTile.y = Math.max(topLeftTile.y - 1, 0);
-            botRightTile.x = Math.min(botRightTile.x + 1, mapSize.width);
-            botRightTile.y = Math.min(botRightTile.y + 1, mapSize.height);
+            topLeftTile.x = Math.max(topLeftTile.x - 2, 0);
+            topLeftTile.y = Math.max(topLeftTile.y - 2, 0);
+            botRightTile.x = Math.min(botRightTile.x + 2, mapSize.width);
+            botRightTile.y = Math.min(botRightTile.y + 2, mapSize.height);
             var row = topLeftTile.y;
             while (row < botRightTile.y) {
                 var col = topLeftTile.x;
@@ -143,6 +143,12 @@
                         break;
                     case sm3.GameLevel.ENTITYTYPE.DARKGOOMBA:
                         registerEntity(new sm3.Goomba(spawnPosition, that, sm3.Goomba.TYPE.DARKGOOMBA));
+                        break;
+                    case sm3.GameLevel.ENTITYTYPE.KOOPA:
+                        registerEntity(new sm3.Koopa(spawnPosition, that, sm3.Koopa.TYPE.KOOPA));
+                        break;
+                    case sm3.GameLevel.ENTITYTYPE.REDKOOPA:
+                        registerEntity(new sm3.Koopa(spawnPosition, that, sm3.Koopa.TYPE.REDKOOPA));
                         break;
                     default:
                     }

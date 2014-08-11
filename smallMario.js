@@ -385,8 +385,8 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
                 this.changeState(sm3.SmallMario.STATE.DIE);
             }
             break;
-        case sm3.GameLevel.ENTITYTYPE.DARKGOOMBA:
-            if (object.getState() != sm3.Goomba.STATE.WALK) {
+        case sm3.GameLevel.ENTITYTYPE.KOOPA:
+            if (object.getState() != sm3.Koopa.STATE.WALK) {
                 return;
             }
             angle = sm3.utils.getAngle(collision.collisionVector);
@@ -398,9 +398,6 @@ sm3.SmallMario = function (initialPosition, level, powerLevel) {
             } else {
                 this.changeState(sm3.SmallMario.STATE.DIE);
             }
-            break;
-        case sm3.GameLevel.ENTITYTYPE.KOOPA:
-
             break;
         case sm3.GameLevel.ENTITYTYPE.FLYINGGOOMBA:
 

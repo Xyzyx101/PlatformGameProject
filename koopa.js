@@ -1,31 +1,31 @@
-sm3.Goomba = function (initialPosition, level, type) {
+sm3.Koopa = function (initialPosition, level, type) {
     "use strict";
     var that = this;
-    var frameSize = {width:64,height:64};
+    var frameSize = {width:64,height:128};
     var position = initialPosition;
     this.getPosition = function () {
         return position;
     };
     this.getType = function () {
-        return sm3.GameLevel.ENTITYTYPE.GOOMBA;
+        return sm3.GameLevel.ENTITYTYPE.KOOPA;
     };
     this.getInteractsWithList = function () {
         return null;
     };
     this.interactsWithStaticGeometry = function () {return true;};
 
-    var bbSize = {width:48, height:48};
-    var bbOffset = {x:8, y:12};
+    var bbSize = {width:56, height:56};
+    var bbOffset = {x:4, y:68};
     var bb = new sm3.BoundingBox(position, frameSize, bbSize, bbOffset);
     this.getBoundingBox = function () {
         return bb;
     };
-    sm3.Entity.call(this, "./images/goomba.png", 300, frameSize);
+    sm3.Entity.call(this, "./images/koopa.png", 300, frameSize);
 
     var spriteRow;
-    if (type == sm3.Goomba.TYPE.GOOMBA) {
+    if (type == sm3.Koopa.TYPE.KOOPA) {
         spriteRow = 0;
-    } else if (type == sm3.Goomba.TYPE.DARKGOOMBA) {
+    } else if (type == sm3.Koopa.TYPE.REDKOOPA) {
         spriteRow = 1;
     }
     this.addAnim(new sm3.Anim("Walk",
@@ -33,20 +33,20 @@ sm3.Goomba = function (initialPosition, level, type) {
                                {x:frameSize.width, y:frameSize.height * spriteRow}],
                               [0,1])
                 );
-    this.addAnim(new sm3.Anim("Squish",
-                              [{x:frameSize.width * 2, y:frameSize.height * spriteRow}],
+    this.addAnim(new sm3.Anim("Shell",
+                              [{x:frameSize.width * 5, y:frameSize.height * spriteRow}],
                               [0])
                 );
 
     this.stomp = function () {
-        this.changeState(sm3.Goomba.STATE.SQUISH);
+        //spawn shell
+        console.log("TODO spawn shell");
     };
     this.hit = function () {
-        this.changeState(sm3.Goomba.STATE.FLIP);
+        this.changeState(sm3.Koopa.STATE.FLIP);
     };
 
     var velocity = {x:-50, y:0};
-
     var maxVelocity = {x:100, y:800};
     var acceleration = -25;
     var gravity = 2.4;
@@ -58,27 +58,24 @@ sm3.Goomba = function (initialPosition, level, type) {
     };
     this.update = function (dt) {
         switch(currentState) {
-        case sm3.Goomba.STATE.WALK:
+        case sm3.Koopa.STATE.WALK:
             velocity.x += acceleration;
             if ( detectWall() ) {
+                acceleration *= -1;
+            }
+            if ( detectHole() ) {
                 acceleration *= -1;
             }
             velocity.x = Math.max(-maxVelocity.x, Math.min(velocity.x, maxVelocity.x));
             position.x += velocity.x * dt * 0.001;
             break;
-        case sm3.Goomba.STATE.SQUISH:
-            deathTimer += dt;
-            if (deathTimer > deathTimerTarget) {
-                level.destroy(this);
-            }
-            break;
-        case sm3.Goomba.STATE.FLIP:
+        case sm3.Koopa.STATE.FLIP:
             deathTimer += dt;
             if (deathTimer > deathTimerTarget) {
                 level.destroy(this);
             }
         default:
-            console.log("unknown goomba state");
+            console.log("unknown koopa state");
         }
         velocity.y += gravity * dt;
         velocity.y = Math.max(-maxVelocity.y, Math.min(velocity.y, maxVelocity.y));
@@ -88,14 +85,22 @@ sm3.Goomba = function (initialPosition, level, type) {
     };
 
     this.render = function (cameraOffset) {
-        if (currentState == sm3.Goomba.STATE.FLIP) {
+        if (currentState == sm3.Koopa.STATE.FLIP) {
             sm3.ctx.save();
             sm3.ctx.scale(1, -1);
             this.displayAnim( -(position.x - cameraOffset.x),
                               position.y - cameraOffset.y + frameSize.height);
             sm3.ctx.restore();
         } else {
-            this.displayAnim(position.x - cameraOffset.x, position.y - cameraOffset.y);
+            if (velocity.x > 0) {
+                sm3.ctx.save();
+                sm3.ctx.scale(-1, 1);
+                this.displayAnim( -(position.x - cameraOffset.x + frameSize.width),
+                              position.y - cameraOffset.y);
+                sm3.ctx.restore();
+            } else {
+                this.displayAnim(position.x - cameraOffset.x, position.y - cameraOffset.y);
+            }
         }
     };
 
@@ -113,27 +118,25 @@ sm3.Goomba = function (initialPosition, level, type) {
             level.destroy(this);
             break;
         default:
-            console.log("Error in goomba.resolveStaticCollisions() Unknown tile type");
+            console.log("Error in koopa.resolveStaticCollisions() Unknown tile type");
         }
     };
 
     this.changeState = function (newState) {
         currentState = newState;
         switch(newState) {
-        case sm3.Goomba.STATE.WALK:
+        case sm3.Koopa.STATE.WALK:
             this.changeAnim("Walk");
             break;
-        case sm3.Goomba.STATE.SQUISH:
-            this.changeAnim("Squish");
-            break;
-        case sm3.Goomba.STATE.FLIP:
+        case sm3.Koopa.STATE.FLIP:
             velocity.y = -1000;
+            this.changeAnim("Shell");
             break;
         default:
-            console.log("unknown goomba state");
+            console.log("unknown koopa state");
         }
     };
-    this.changeState(sm3.Goomba.STATE.WALK);
+    this.changeState(sm3.Koopa.STATE.WALK);
     var updateCollisionPhysics = function (collisionVector, dt) {
         // this ignores wierd buggy collision when a collision vector tries
         // to push you in a direction you are already going
@@ -162,12 +165,21 @@ sm3.Goomba = function (initialPosition, level, type) {
         var testTile = level.getTileAtPos(testPoint);
         return level.getTileType(testTile.y, testTile.x) == sm3.CollisionSystem.COLLISIONTILES.SOLID;
     };
+    var detectHole = function () {
+        var testPoint;
+        if (acceleration > 0) {
+            testPoint = sm3.utils.vectorAdd(bb.center, {x:bb.halfWidth + 1, y:bb.halfHeight + 1});
+        } else {
+            testPoint = sm3.utils.vectorAdd(bb.center, {x:-bb.halfWidth - 1, y:bb.halfHeight + 1});
+        }
+        var testTile = level.getTileAtPos(testPoint);
+        return level.getTileType(testTile.y, testTile.x) == sm3.CollisionSystem.COLLISIONTILES.EMPTY;
+    };
 };
 
-sm3.Goomba.TYPE = {GOOMBA:0,
-                   DARKGOOMBA:1
+sm3.Koopa.TYPE = {KOOPA:0,
+                   REDKOOPA:1
                   };
-sm3.Goomba.STATE = {WALK:0,
-                    SQUISH:1,
-                    FLIP:2
+sm3.Koopa.STATE = {WALK:0,
+                    FLIP:1
                    };
