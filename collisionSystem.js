@@ -98,10 +98,13 @@ sm3.CollisionSystem = function () {
             if (overlap(axisProjX, targetAxisProjX) &&
                 overlap(axisProjY, targetAxisProjY)) {
 
-                //DELETEME
+                //broke
                 //var xOverlap = bb.halfWidth + targetBB.halfWidth - Math.abs(bb.center.x - targetBB.center.x);
                 //var yOverlap = bb.halfHeight + targetBB.halfHeight - Math.abs(bb.center.y - targetBB.center.y);
 
+                //var collisionVector = {x:-yOverlap, y:xOverlap};
+
+                //works kinda
                 var collisionVector = sm3.utils.vectorSub(targetBB.center, bb.center);
                 var collision = new sm3.Collision(type, collisionVector);
                 firstElement.resolveActiveCollision(collision, secondElement, dt);

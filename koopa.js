@@ -10,7 +10,8 @@ sm3.Koopa = function (initialPosition, level, type) {
         return sm3.GameLevel.ENTITYTYPE.KOOPA;
     };
     this.getInteractsWithList = function () {
-        return null;
+        return [sm3.GameLevel.ENTITYTYPE.GOOMBA,
+                sm3.GameLevel.ENTITYTYPE.KOOPA];
     };
     this.interactsWithStaticGeometry = function () {return true;};
 
@@ -121,7 +122,16 @@ sm3.Koopa = function (initialPosition, level, type) {
             console.log("Error in koopa.resolveStaticCollisions() Unknown tile type");
         }
     };
-
+    this.resolveActiveCollision = function (collision, object, dt) {
+        if (currentState != sm3.Koopa.STATE.WALK) {
+            return;
+        }
+        if (object.getType() == sm3.GameLevel.ENTITYTYPE.KOOPA ||
+            object.getType() == sm3.GameLevel.ENTITYTYPE.GOOMBA) {
+            updateCollisionPhysics(collision.collisionVector, dt);
+            acceleration *= -1;
+        }
+    };
     this.changeState = function (newState) {
         currentState = newState;
         switch(newState) {
